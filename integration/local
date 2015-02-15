@@ -1,0 +1,5 @@
+[test-locations]
+localhost ansible_connection=local
+
+[install-locations]
+localhost ansible_connection=local

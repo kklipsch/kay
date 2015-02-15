@@ -1,0 +1,26 @@
+- name: Kay call in non-initialized directory fails.
+  command: chdir="{{ test_directory.stdout }}" "{{ kay_app.stdout }}" years
+  ignore_errors: True
+  register: non_init_fail
+
+- name: Kay call result should be non good 
+  assert: 
+        that: 
+        - "non_init_fail.rc != 0"
+        - "'This is not a kay directory' in non_init_fail.stderr"
+  register: init_err_out
+  ignore_errors: True
+
+- name: Show kay output
+  command: echo "{{ non_init_fail.stderr }}"
+  when: init_err_out|failed
+  failed_when: True
+
+- name: Call kay init
+  command: chdir="{{ test_directory.stdout }}" "{{ kay_app.stdout }}" init
+
+- name: Kay calls should work
+  command: chdir="{{ test_directory.stdout }}" "{{ kay_app.stdout }}" years
+
+- name: Kay init again should be fine 
+  command: chdir="{{ test_directory.stdout }}" "{{ kay_app.stdout }}" init 

@@ -1,0 +1,6 @@
+- hosts: test-locations
+  roles:
+        - before
+        - install
+        - init
+        - after 
