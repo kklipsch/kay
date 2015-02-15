@@ -1,3 +1,3 @@
-# The LANGUAGE README
+# Golang 
 
-Put the language specific instructions in this file.
+The golang implementation.
