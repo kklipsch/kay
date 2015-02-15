@@ -1,14 +1,12 @@
-# kay - A command line tool to keep track of autobiography chapters organized by year.
-
-## Preamble
+## kay - A command line tool to keep track of autobiography chapters organized by year.
 
 Every year for most of my adult life, my grandmother has given me (and all her other grandchildren) a chapter of her autobiography.  The chapter is organized by age, so for example, on your 25th birthday you receive the chapter of her story from her own 25th year.  She does not fully rewrite the chapter if it has already been written but she does occasionally edit details or add small pieces.  Further, she did not start this with her first year and only writes the chapters as they are needed.  For example, if she has grandchildren hitting the ages 34, 28, 19 and 7 in a year, but she has years 28 and 19 already written, that year she will add years 34 and 7 along with her edits of years 28 and 19.  This has led to an autobiography that is delivered out of order and has gaps in it, as well as there being many different versions of each story.  In addition to the stories she sends, she frequently includes pictures or other mementos related to her autobiography that add valuable context to the stories she tells.
 
 I started collecting these stories in order to organize them and keep a central repository for myself and anyone else who wanted to access the stories.  Typically, they are delivered in the mail on or near your birthday.  They are standard printouts with hand written edits or personal notes.  Over the years, I would also occasionally receive printouts or xerox copies of the versions of the chapters she had prepared for her other grandchildren through the year.  I scan all of the chapters I receive and save them.  Also, every once in awhile someone will take a dump of the source files from my grandmother's computer.  This usually is then delivered to me on a thumb-drive or Dropbox share with no organization.  I therefore have collected a hodge-podge of .doc, .docx, .txt, .rtf, .txt, .jpg, .jpeg, .png and .pdf chapters and appendixes.  Answering questions about who received what story, when it was written and what years are missing has become an unmanageable task.
 
-Further, I publish a website for others to be able to access.  Organizing this website has been a manual, tedious and error prone process. Due to this the website is usually out of date, is organized poorly, and doesn't receive much attention from a visual perspective.
+I publish a website for others to be able to access.  Organizing this website has been a manual, tedious and error prone process. Due to this the website is usually out of date, is organized poorly, and doesn't receive much attention from a visual perspective.
 
-Finally, at some point I would like to investigate creating a 'vanity' book out of these chapters so being able to organize and make sense of them quickly will be a boon.
+At some point I would like to investigate creating a 'vanity' book out of these chapters so being able to organize and make sense of them quickly will be a boon.
 
 ## What I Want to Achieve Part I: Make the task of maintaining this autobiography easy.
 
