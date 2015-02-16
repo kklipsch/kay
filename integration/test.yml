@@ -3,4 +3,5 @@
         - before
         - install
         - init
+        - add
         - after 

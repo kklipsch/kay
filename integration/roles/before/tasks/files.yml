@@ -1,0 +1,11 @@
+- name: Copy test file 1 over. 
+  copy: src=sandbox/1941.test1.2015_02.doc dest="{{ test_directory.stdout }}"
+        
+- name: Copy test file 2 over. 
+  copy: src=sandbox/1942.test2.2015_02.docx dest="{{ test_directory.stdout }}"
+
+- name: Copy test file 3 over. 
+  copy: src=sandbox/1943.test3.2015_02.doc dest="{{ test_directory.stdout }}"
+          
+- name: Copy test file 4 over. 
+  copy: src=sandbox/test4.doc dest="{{ test_directory.stdout }}"
