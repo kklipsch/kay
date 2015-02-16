@@ -1,0 +1,17 @@
+- name: Add one file with parseable name
+  command: chdir="{{ test_directory.stdout }}" "{{ kay_app.stdout }}" add 1941.test1.2015_02.doc
+
+- name: Stat after adding test1 file 
+  command: chdir="{{ test_directory.stdout }}" "{{ kay_app.stdout }}" stat
+  register: stat_test1_call 
+
+- name: Stat has missing 
+  assert: 
+        that: 
+        - "'? 1942.test2.2015_02.docx' in stat_test1_call.stdout"
+        - "'? 1943.test3.2015_02.doc' in stat_test1_call.stdout"
+        - "'? test4.doc' in stat_test1_call.stdout"
+
+- name: Stat does not have added
+  fail: msg="File is not in index '{{ stat_test1_call.stdout }}'"
+  when: '"? 1941.test1.2015_02.docx" in stat_test1_call.stdout'

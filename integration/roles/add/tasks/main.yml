@@ -1,0 +1,5 @@
+- name: check the initial state before adds 
+  include: initial.yml
+          
+- name: Add one file 
+  include: add_one.yml
