@@ -5,20 +5,6 @@ import (
 	"os"
 )
 
-func FileExists(file string) (bool, error) {
-	_, err := os.Stat(file)
-	if err != nil {
-		if os.IsNotExist(err) {
-			return false, nil
-		} else {
-			//very stupid golang not allows empty bool?
-			return false, err
-		}
-	} else {
-		return true, nil
-	}
-}
-
 func GetFilesFromDir(path string) ([]File, error) {
 	dir, err := ioutil.ReadDir(path)
 	if err != nil {

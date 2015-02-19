@@ -100,7 +100,7 @@ func NewKay() *cli.App {
 }
 
 func inKay(name string) func(c *cli.Context) error {
-	return KayBased(func(c *cli.Context, kayDir KayDir, index *Index) error {
+	return KayBased(func(c *cli.Context, kayDir KayDir, index *index) error {
 		fmt.Printf(name)
 		return nil
 	})

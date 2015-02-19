@@ -7,27 +7,14 @@ import (
 	"testing"
 )
 
-func TestFileExists(t *testing.T) {
-	InTempDir(t, "file exists", func(dir string) {
-		exists, err := FileExists(dir)
-		FailIfError(t, err, "Temp dir exists error")
-		Assert(t, exists, "Temp dir does not exist")
-
-		exists, err = FileExists(filepath.Join(dir, "foo"))
-		FailIfError(t, err, "Non existent file exists err")
-		Assert(t, !exists, "Non existent file exists")
-	})
-}
-
 func TestGetFilesFromDir(t *testing.T) {
 	InTempDir(t, "get files from dir", func(dir string) {
-		FailIfError(t, ioutil.WriteFile(filepath.Join(dir, "test1"), []byte("test1"), 0777), "couldnt create test1")
-		FailIfError(t, os.MkdirAll(filepath.Join(dir, "test2"), 0755), "Couldnt create test2")
-		FailIfError(t, ioutil.WriteFile(filepath.Join(dir, "test3"), []byte("test3"), 0777), "Couldnt make test3")
+		ioutil.WriteFile(filepath.Join(dir, "test1"), []byte("test1"), 0777)
+		os.MkdirAll(filepath.Join(dir, "test2"), 0755) //dirs should be filtered
+		ioutil.WriteFile(filepath.Join(dir, "test3"), []byte("test3"), 0777)
 
-		files, err := GetFilesFromDir(dir)
-		FailIfError(t, err, "Couldnt get files")
-		assertFiles(t, files, []string{"test1", "test3"}, dir, "Get files")
+		files, _ := GetFilesFromDir(dir)
+		assertFiles(t, files, []string{"test1", "test3"}, dir, "Get only files from directory")
 
 	})
 }

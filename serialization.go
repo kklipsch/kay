@@ -10,8 +10,8 @@ import (
 	"time"
 )
 
-func BuildIndex(indexDir string) (*Index, error) {
-	if err := makeDirIfNecessary(indexDir); err != nil {
+func BuildIndex(indexDir string) (*index, error) {
+	if err := os.MkdirAll(indexDir, 0755); err != nil {
 		return nil, err
 	}
 
@@ -24,8 +24,8 @@ func BuildIndex(indexDir string) (*Index, error) {
 
 }
 
-func WriteIndex(indexDir string, index *Index) error {
-	if err := makeDirIfNecessary(indexDir); err != nil {
+func WriteIndex(indexDir string, index *index) error {
+	if err := os.MkdirAll(indexDir, 0755); err != nil {
 		return err
 	}
 
@@ -49,23 +49,7 @@ func WriteIndex(indexDir string, index *Index) error {
 	return os.Rename(tempdir, indexDir)
 }
 
-func makeDirIfNecessary(indexDir string) error {
-	indexExists, existsErr := FileExists(indexDir)
-	if existsErr != nil {
-		return existsErr
-	}
-
-	if !indexExists {
-		makeErr := os.MkdirAll(indexDir, 0755)
-		if makeErr != nil {
-			return makeErr
-		}
-	}
-
-	return nil
-}
-
-func DeserializeRecord(file File, index *Index, bytes []byte) (*record, error) {
+func DeserializeRecord(file File, index *index, bytes []byte) (*record, error) {
 	var rec record
 	jsonErr := json.Unmarshal(bytes, &rec)
 	if jsonErr != nil {
@@ -75,7 +59,7 @@ func DeserializeRecord(file File, index *Index, bytes []byte) (*record, error) {
 	return index.SetRecord(&rec, file)
 }
 
-func readRecord(file File, path string, index *Index) (*record, error) {
+func readRecord(file File, path string, index *index) (*record, error) {
 	bytes, readErr := ioutil.ReadFile(filepath.Join(path, string(file)))
 	if readErr != nil {
 		return nil, readErr
@@ -84,7 +68,7 @@ func readRecord(file File, path string, index *Index) (*record, error) {
 	return DeserializeRecord(file, index, bytes)
 }
 
-func readAllRecords(index *Index, path string, files []File) (*Index, error) {
+func readAllRecords(index *index, path string, files []File) (*index, error) {
 	for _, file := range files {
 		record, readErr := readRecord(file, path, index)
 		if readErr != nil {
@@ -125,7 +109,7 @@ func writeRecord(record *record, tempdir string) error {
 	return nil
 }
 
-func writeAllRecords(index *Index, tempdir string) error {
+func writeAllRecords(index *index, tempdir string) error {
 	for _, record := range index.Records() {
 		if err := writeRecord(record, tempdir); err != nil {
 			return err

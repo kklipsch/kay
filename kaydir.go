@@ -22,8 +22,9 @@ func (kayDir KayDir) Index() string {
 	return filepath.Join(kayDir.Meta(), kay_index_dir)
 }
 
-func (kayDir KayDir) In() (bool, error) {
-	return FileExists(kayDir.Meta())
+func (kayDir KayDir) In() bool {
+	_, err := os.Stat(kayDir.Meta())
+	return err == nil
 }
 
 func (kayDir KayDir) Make() error {

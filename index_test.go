@@ -5,15 +5,23 @@ import (
 	"time"
 )
 
-func TestCreateRecord(t *testing.T) {
+func TestEmptyIndex(t *testing.T) {
+	Assert(t, !EmptyIndex().ContainsFile(File("foo")), "Empty index shouldn't contain a file")
+}
+
+func TestCreateRecordAddsItToIndex(t *testing.T) {
 	i := EmptyIndex()
+	f := File("foo")
+
+	i.CreateRecord(Year(1952), f, Note("foo"), Tag("1"), Tag("b"))
+	Assert(t, i.ContainsFile(f), "New record should add to index")
+}
+
+func TestCreateRecordUpdatesRecordCorrectly(t *testing.T) {
 	f := File("foo")
 	before := time.Now()
 
-	Assert(t, !i.ContainsFile(f), "Empty index shouldn't contain a file")
-
-	r, err := i.CreateRecord(Year(1952), f, Note("foo"), Tag("1"), Tag("b"))
-	FailIfError(t, err, "Create record failed")
+	r, _ := EmptyIndex().CreateRecord(Year(1952), f, Note("foo"), Tag("1"), Tag("b"))
 
 	Assert(t, r.Note == "foo", "Note set")
 	Assert(t, r.DateAdded.After(before), "Date Added is set")
@@ -22,29 +30,24 @@ func TestCreateRecord(t *testing.T) {
 	Assert(t, r.HasTag("1"), "Tag set 1")
 	Assert(t, r.HasTag("b"), "Tag set b")
 	Assert(t, !r.HasTag("moo"), "Moo is there")
-
-	Assert(t, i.ContainsFile(f), "New record should add to index")
 }
 
-func TestCreateSameFileTwice(t *testing.T) {
+func TestCreateRecordForSameFileTwice(t *testing.T) {
 	i := EmptyIndex()
 	f := File("foo")
-	Assert(t, !i.ContainsFile(f), "Empty index shouldn't contain a file")
-	_, err := i.CreateRecord(Year(1952), f, "")
-	Assert(t, i.ContainsFile(f), "New record should add to index")
-	_, err = i.CreateRecord(Year(1953), f, "")
+
+	i.CreateRecord(Year(1952), f, "")
+	_, err := i.CreateRecord(Year(1953), f, "")
 	FailIfNoError(t, err, "Should not be able to add file twice")
 }
 
-func TestGetFile(t *testing.T) {
+func TestGetRecordForFileFile(t *testing.T) {
 	i := EmptyIndex()
 	f1 := File("foo1")
 	f2 := File("foo2")
 
-	_, err := i.CreateRecord(Year(1952), f1, "")
-	FailIfError(t, err, "Could not create record for getting")
-	_, err = i.CreateRecord(Year(1962), f2, "")
-	FailIfError(t, err, "Could not create second record for getting")
+	i.CreateRecord(Year(1952), f1, "")
+	i.CreateRecord(Year(1962), f2, "")
 
 	Assert(t, i.Get("foo1").File() == f1, "First file get")
 	Assert(t, i.Get("foo2").File() == f2, "Second file get")
@@ -54,27 +57,22 @@ func TestGetFile(t *testing.T) {
 func TestGottenFileChangesAreRepresented(t *testing.T) {
 	i := EmptyIndex()
 	f := File("foo1")
-	_, err := i.CreateRecord(Year(1952), f, "")
-	FailIfError(t, err, "Failed ot create error for change test")
+	i.CreateRecord(Year(1952), f, "")
 
 	r1 := i.Get(f)
 	r2 := i.Get(f)
 
 	Assert(t, r1 == r2, "Pointer equality")
 	Assert(t, r1.Year == r2.Year, "Same Values")
+
 	r1.Year = Year(1953)
 	Assert(t, r1.Year == r2.Year, "Same Values after swap")
 }
 
 func TestMoveFile(t *testing.T) {
 	i := EmptyIndex()
-	r, err := i.CreateRecord(Year(1952), File("foo"), "")
-	FailIfError(t, err, "Unable to create record for move file test")
-
-	Assert(t, r.File() == File("foo"), "File has original name")
-	Assert(t, i.ContainsFile("foo"), "Found file before move")
-	_, err = i.MoveRecord(r, File("moo"))
-	FailIfError(t, err, "Failed to move file")
+	r, _ := i.CreateRecord(Year(1952), File("foo"), "")
+	i.MoveRecord(r, File("moo"))
 
 	Assert(t, r.File() == File("moo"), "File was changed")
 	Assert(t, i.ContainsFile("moo"), "New file is found")
@@ -83,38 +81,28 @@ func TestMoveFile(t *testing.T) {
 
 func TestMoveNonExistentFile(t *testing.T) {
 	i := EmptyIndex()
-	r, err := i.CreateRecord(Year(1952), File("foo"), "")
-	FailIfError(t, err, "Failed on create record for move non-existent file")
 
-	err = i.DeleteRecord(r)
-	FailIfError(t, err, "Failed to delete record for move non-existent file")
+	r, _ := i.CreateRecord(Year(1952), File("foo"), "")
+	i.DeleteRecord(r)
+	_, err := i.MoveRecord(r, File("foo2"))
 
-	Assert(t, !i.ContainsFile(File("foo")), "File does not exist before move.")
-	_, err = i.MoveRecord(r, File("foo2"))
-	FailIfNoError(t, err, "Shouldn't be able to move record into a non existing file")
+	FailIfNoError(t, err, "Shouldn't be able to non existing record.")
 }
 
 func TestMoveIntoExistingFile(t *testing.T) {
 	i := EmptyIndex()
-	r, err := i.CreateRecord(Year(1952), File("foo"), "")
-	FailIfError(t, err, "Unable to create first file for move existing file test")
+	r, _ := i.CreateRecord(Year(1952), File("foo"), "")
+	i.CreateRecord(Year(1953), File("foo2"), "")
 
-	_, err = i.CreateRecord(Year(1953), File("foo2"), "")
-	FailIfError(t, err, "Unable to create second file for move existing file test")
-
-	_, err = i.MoveRecord(r, File("foo2"))
+	_, err := i.MoveRecord(r, File("foo2"))
 	FailIfNoError(t, err, "Shouldn't be able to move into an existing file")
 }
 
 func TestSetRecord(t *testing.T) {
-	i := EmptyIndex()
-	r, err := i.CreateRecord(Year(1952), File("foo"), "")
-	FailIfError(t, err, "Unable to create record for set file test")
-	FailIfError(t, i.DeleteRecord(r), "Unable to delete record in set record test")
+	r, _ := EmptyIndex().CreateRecord(Year(1952), File("foo"), "")
 
-	Assert(t, !i.ContainsFile("foo"), "Found file before move")
-	_, err = i.SetRecord(r, File("moo"))
-	FailIfError(t, err, "Failed to set file")
+	i := EmptyIndex()
+	i.SetRecord(r, File("moo"))
 
 	Assert(t, r.File() == File("moo"), "File was changed")
 	Assert(t, i.ContainsFile("moo"), "New file is found")
@@ -122,54 +110,36 @@ func TestSetRecord(t *testing.T) {
 }
 
 func TestSetRecordToExistingFile(t *testing.T) {
-	i := EmptyIndex()
-	r, err := i.CreateRecord(Year(1952), File("foo"), "")
-	FailIfError(t, err, "Unable to create record for set file test")
-	FailIfError(t, i.DeleteRecord(r), "Unable to delete record in set record test")
+	r, _ := EmptyIndex().CreateRecord(Year(1952), File("foo"), "")
 
-	_, err = i.CreateRecord(Year(1952), File("moo"), "")
-	FailIfError(t, err, "Unable to create record 2 for set file test")
-	_, err = i.SetRecord(r, File("moo"))
-	FailIfNoError(t, err, "Allowed to set record to existing")
+	i := EmptyIndex()
+	i.CreateRecord(Year(1952), File("moo"), "")
+	_, err := i.SetRecord(r, File("moo"))
+	FailIfNoError(t, err, "Should not be allowed to set a record to an existing file.")
 }
 
 func TestDeleteFile(t *testing.T) {
 	i := EmptyIndex()
-	_, err := i.CreateRecord(Year(1952), File("foo"), "")
-	FailIfError(t, err, "Failed on first create for delete file test")
+	f := File("foo1")
+	r, _ := i.CreateRecord(Year(1952), f, "")
+	i.DeleteRecord(r)
 
-	r, err2 := i.CreateRecord(Year(1952), File("foo1"), "")
-	FailIfError(t, err2, "Failed on second create for delete file test")
-
-	_, err = i.CreateRecord(Year(1952), File("foo2"), "")
-	FailIfError(t, err, "Failed on third create for delete file test")
-
-	Assert(t, i.ContainsFile(File("foo1")), "File exists before delete")
-	FailIfError(t, i.DeleteRecord(r), "Delete should work")
-	Assert(t, !i.ContainsFile(File("foo1")), "File removed")
+	Assert(t, !i.ContainsFile(f), "File removed")
 }
 
 func TestCantDeleteNonExistentFile(t *testing.T) {
-	i := EmptyIndex()
-	r, err := i.CreateRecord(Year(1952), File("foo"), "")
-	FailIfError(t, err, "Fail on first create for cant delete non-existent file")
-
-	Assert(t, i.ContainsFile(r.File()), "File does exist before delete.")
-	FailIfError(t, i.DeleteRecord(r), "Failed on first delete for delete non existent file")
-	Assert(t, !i.ContainsFile(r.File()), "File does not exist before delete.")
-	FailIfNoError(t, i.DeleteRecord(r), "Should not be able to delete existant file")
+	r, _ := EmptyIndex().CreateRecord(Year(1952), File("foo"), "")
+	FailIfNoError(t, EmptyIndex().DeleteRecord(r), "Should not be able to delete non existent record.")
 }
 
-func UpdateTags(t *testing.T) {
+func TestHasTags(t *testing.T) {
 	i := EmptyIndex()
 	f := File("foo")
-	r, err := i.CreateRecord(Year(1952), f, "")
-	FailIfError(t, err, "Fail on first update tags create")
-
-	AssertTags(t, r.Tags, []Tag{}, "Empty tags to start")
+	r, _ := i.CreateRecord(Year(1952), f, "")
 
 	r.Tags = append(r.Tags, Tag("foo"))
 	r.Tags = append(r.Tags, Tag("bar"))
+
 	AssertTags(t, r.Tags, []Tag{Tag("foo"), Tag("bar")}, "add tag works")
 	Assert(t, r.HasTag("bar"), "Has tag works")
 
@@ -181,10 +151,8 @@ func UpdateTags(t *testing.T) {
 func TestUpdateNote(t *testing.T) {
 	i := EmptyIndex()
 	f := File("foo")
-	r, err := i.CreateRecord(Year(1952), f, "note 1")
-	FailIfError(t, err, "Failed on first create for update note")
+	r, _ := i.CreateRecord(Year(1952), f, "note 1")
 
-	Assert(t, r.Note == Note("note 1"), "note is correct on construction")
 	r.Note = Note("note 2")
 	Assert(t, r.Note == Note("note 2"), "note is updated")
 }
@@ -192,10 +160,8 @@ func TestUpdateNote(t *testing.T) {
 func TestSwapYear(t *testing.T) {
 	i := EmptyIndex()
 	f := File("foo")
-	r, err := i.CreateRecord(Year(1952), f, "")
-	FailIfError(t, err, "Failed on first create for swap year")
+	r, _ := i.CreateRecord(Year(1952), f, "")
 
-	Assert(t, r.Year == Year(1952), "year is correct on construction")
 	r.Year = Year(1953)
 	Assert(t, r.Year == Year(1953), "year is updated")
 }

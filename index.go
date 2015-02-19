@@ -10,43 +10,32 @@ type File string
 type Tag string
 type Note string
 
-type Index struct {
+type index struct {
 	records map[File]*record
 }
 
-func EmptyIndex() *Index {
-	return &Index{(map[File]*record{})}
+func EmptyIndex() *index {
+	return &index{(map[File]*record{})}
 }
 
-func (i *Index) ContainsFile(file File) bool {
+func (i *index) ContainsFile(file File) bool {
 	_, contains := i.records[file]
 	return contains
 }
 
-func (i *Index) Get(file File) *record {
+func (i *index) Get(file File) *record {
 	record, _ := i.records[file]
 	return record
 }
 
-func (i *Index) CreateRecord(year Year, file File, note Note, tags ...Tag) (*record, error) {
-	if i.ContainsFile(file) {
-		return nil, fmt.Errorf("File %v exists.", file)
-	}
-
-	now := time.Now()
-	r := record{}
-	r.Year = year
-	r.file = file
-	r.DateAdded = now
-	r.Tags = tags
-	r.Note = note
-	i.records[file] = &r
-	return &r, nil
+func (i *index) CreateRecord(year Year, file File, note Note, tags ...Tag) (*record, error) {
+	r := record{file, year, note, time.Now(), time.Now(), tags}
+	return i.addRecord(&r, file, false)
 }
 
-func (i *Index) addRecord(r *record, newFile File, replace bool) (*record, error) {
+func (i *index) addRecord(r *record, newFile File, replace bool) (*record, error) {
 	if i.ContainsFile(newFile) {
-		return nil, fmt.Errorf("Attempting to add file to one that already exists in index: %s", newFile)
+		return nil, fmt.Errorf("Attempting to add record for file that exists in index: %s", newFile)
 	}
 
 	if replace {
@@ -62,15 +51,15 @@ func (i *Index) addRecord(r *record, newFile File, replace bool) (*record, error
 	return r, nil
 }
 
-func (i *Index) SetRecord(r *record, newFile File) (*record, error) {
+func (i *index) SetRecord(r *record, newFile File) (*record, error) {
 	return i.addRecord(r, newFile, false)
 }
 
-func (i *Index) MoveRecord(r *record, newFile File) (*record, error) {
+func (i *index) MoveRecord(r *record, newFile File) (*record, error) {
 	return i.addRecord(r, newFile, true)
 }
 
-func (i *Index) DeleteRecord(r *record) error {
+func (i *index) DeleteRecord(r *record) error {
 	if !i.ContainsFile(r.File()) {
 		return fmt.Errorf("File %v is not in index.", r.File())
 	}
@@ -79,7 +68,7 @@ func (i *Index) DeleteRecord(r *record) error {
 	return nil
 }
 
-func (i *Index) Records() []*record {
+func (i *index) Records() []*record {
 	records := []*record{}
 	for _, record := range i.records {
 		records = append(records, record)
