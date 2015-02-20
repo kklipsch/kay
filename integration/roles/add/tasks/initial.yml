@@ -1,0 +1,11 @@
+- name: Initial stat 
+  command: chdir="{{ test_directory.stdout }}" "{{ kay_app.stdout }}" stat
+  register: stat_call 
+
+- name: Stat has missing 
+  assert: 
+        that: 
+        - "'? 1941.test1.2015_02.doc' in stat_call.stdout"
+        - "'? 1942.test2.2015_02.docx' in stat_call.stdout"
+        - "'? 1943.test3.2015_02.doc' in stat_call.stdout"
+        - "'? test4.doc' in stat_call.stdout"
