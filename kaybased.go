@@ -7,7 +7,7 @@ import (
 	"github.com/kklipsch/cli"
 )
 
-func KayBased(action func(c *cli.Context, kayDir KayDir, index *index) error) func(c *cli.Context) error {
+func KayBased(action func(c *cli.Context, kayDir KayDir, index index) error) func(c *cli.Context) error {
 	return func(c *cli.Context) error {
 		kayDir, err := GetKayDir()
 		if err != nil {

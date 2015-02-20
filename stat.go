@@ -3,7 +3,7 @@ package main
 import "fmt"
 import "github.com/kklipsch/cli"
 
-func Stat(c *cli.Context, kayDir KayDir, index *index) error {
+func Stat(c *cli.Context, kayDir KayDir, index index) error {
 	all, err := kayDir.ContentFiles()
 	if err != nil {
 		return err
@@ -13,7 +13,7 @@ func Stat(c *cli.Context, kayDir KayDir, index *index) error {
 	return nil
 }
 
-func PrintUnknownFiles(allFiles []File, index *index) {
+func PrintUnknownFiles(allFiles []File, index index) {
 	for _, file := range allFiles {
 		if !index.ContainsFile(file) {
 			fmt.Printf("? %v\n", file)

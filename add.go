@@ -6,7 +6,7 @@ import (
 	"github.com/kklipsch/cli"
 )
 
-func Add(c *cli.Context, kayDir KayDir, index *index) error {
+func Add(c *cli.Context, kayDir KayDir, index index) error {
 	file := File(c.Args().First())
 	year, year_parsed, err := ParseYear(file)
 	if err != nil {

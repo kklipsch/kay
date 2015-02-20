@@ -15,7 +15,8 @@ func GetFilesFromDir(path string) ([]File, error) {
 }
 
 func getFilesFromList(path string, content []os.FileInfo) []File {
-	files := []File{}
+	//is it bad to over allocate an array in go?
+	files := make([]File, 0)
 	for _, f := range content {
 		if !f.IsDir() {
 			files = append(files, File(f.Name()))

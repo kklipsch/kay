@@ -41,7 +41,7 @@ func TestCreateRecordForSameFileTwice(t *testing.T) {
 	FailIfNoError(t, err, "Should not be able to add file twice")
 }
 
-func TestGetRecordForFileFile(t *testing.T) {
+func TestGetRecordForFile(t *testing.T) {
 	i := EmptyIndex()
 	f1 := File("foo1")
 	f2 := File("foo2")

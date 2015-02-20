@@ -10,30 +10,28 @@ type File string
 type Tag string
 type Note string
 
-type index struct {
-	records map[File]*record
+type index map[File]*record
+
+func EmptyIndex() index {
+	return map[File]*record{}
 }
 
-func EmptyIndex() *index {
-	return &index{(map[File]*record{})}
-}
-
-func (i *index) ContainsFile(file File) bool {
-	_, contains := i.records[file]
+func (i index) ContainsFile(file File) bool {
+	_, contains := i[file]
 	return contains
 }
 
-func (i *index) Get(file File) *record {
-	record, _ := i.records[file]
+func (i index) Get(file File) *record {
+	record, _ := i[file]
 	return record
 }
 
-func (i *index) CreateRecord(year Year, file File, note Note, tags ...Tag) (*record, error) {
+func (i index) CreateRecord(year Year, file File, note Note, tags ...Tag) (*record, error) {
 	r := record{file, year, note, time.Now(), time.Now(), tags}
 	return i.addRecord(&r, file, false)
 }
 
-func (i *index) addRecord(r *record, newFile File, replace bool) (*record, error) {
+func (i index) addRecord(r *record, newFile File, replace bool) (*record, error) {
 	if i.ContainsFile(newFile) {
 		return nil, fmt.Errorf("Attempting to add record for file that exists in index: %s", newFile)
 	}
@@ -46,31 +44,31 @@ func (i *index) addRecord(r *record, newFile File, replace bool) (*record, error
 	}
 
 	r.file = newFile
-	i.records[newFile] = r
+	i[newFile] = r
 
 	return r, nil
 }
 
-func (i *index) SetRecord(r *record, newFile File) (*record, error) {
+func (i index) SetRecord(r *record, newFile File) (*record, error) {
 	return i.addRecord(r, newFile, false)
 }
 
-func (i *index) MoveRecord(r *record, newFile File) (*record, error) {
+func (i index) MoveRecord(r *record, newFile File) (*record, error) {
 	return i.addRecord(r, newFile, true)
 }
 
-func (i *index) DeleteRecord(r *record) error {
+func (i index) DeleteRecord(r *record) error {
 	if !i.ContainsFile(r.File()) {
 		return fmt.Errorf("File %v is not in index.", r.File())
 	}
 
-	delete(i.records, r.File())
+	delete(i, r.File())
 	return nil
 }
 
-func (i *index) Records() []*record {
-	records := []*record{}
-	for _, record := range i.records {
+func (i index) Records() []*record {
+	records := make([]*record, 0)
+	for _, record := range i {
 		records = append(records, record)
 	}
 	return records

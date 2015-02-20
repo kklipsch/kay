@@ -10,7 +10,7 @@ import (
 	"time"
 )
 
-func BuildIndex(indexDir string) (*index, error) {
+func BuildIndex(indexDir string) (index, error) {
 	if err := os.MkdirAll(indexDir, 0755); err != nil {
 		return nil, err
 	}
@@ -24,7 +24,7 @@ func BuildIndex(indexDir string) (*index, error) {
 
 }
 
-func WriteIndex(indexDir string, index *index) error {
+func WriteIndex(indexDir string, index index) error {
 	if err := os.MkdirAll(indexDir, 0755); err != nil {
 		return err
 	}
@@ -49,7 +49,7 @@ func WriteIndex(indexDir string, index *index) error {
 	return os.Rename(tempdir, indexDir)
 }
 
-func DeserializeRecord(file File, index *index, bytes []byte) (*record, error) {
+func DeserializeRecord(file File, index index, bytes []byte) (*record, error) {
 	var rec record
 	jsonErr := json.Unmarshal(bytes, &rec)
 	if jsonErr != nil {
@@ -59,7 +59,7 @@ func DeserializeRecord(file File, index *index, bytes []byte) (*record, error) {
 	return index.SetRecord(&rec, file)
 }
 
-func readRecord(file File, path string, index *index) (*record, error) {
+func readRecord(file File, path string, index index) (*record, error) {
 	bytes, readErr := ioutil.ReadFile(filepath.Join(path, string(file)))
 	if readErr != nil {
 		return nil, readErr
@@ -68,7 +68,7 @@ func readRecord(file File, path string, index *index) (*record, error) {
 	return DeserializeRecord(file, index, bytes)
 }
 
-func readAllRecords(index *index, path string, files []File) (*index, error) {
+func readAllRecords(index index, path string, files []File) (index, error) {
 	for _, file := range files {
 		record, readErr := readRecord(file, path, index)
 		if readErr != nil {
@@ -109,7 +109,7 @@ func writeRecord(record *record, tempdir string) error {
 	return nil
 }
 
-func writeAllRecords(index *index, tempdir string) error {
+func writeAllRecords(index index, tempdir string) error {
 	for _, record := range index.Records() {
 		if err := writeRecord(record, tempdir); err != nil {
 			return err

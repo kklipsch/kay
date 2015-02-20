@@ -7,7 +7,7 @@ import (
 	"testing"
 )
 
-func TestGetFilesFromDir(t *testing.T) {
+func TestGetOnlyFilesFromDir(t *testing.T) {
 	InTempDir(t, "get files from dir", func(dir string) {
 		ioutil.WriteFile(filepath.Join(dir, "test1"), []byte("test1"), 0777)
 		os.MkdirAll(filepath.Join(dir, "test2"), 0755) //dirs should be filtered

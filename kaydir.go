@@ -5,8 +5,8 @@ import (
 	"path/filepath"
 )
 
-const kay_meta_dir string = ".kay"
-const kay_index_dir string = "index"
+const kayMetaDir string = ".kay"
+const kayIndexDir string = "index"
 
 type KayDir string
 
@@ -15,11 +15,11 @@ func (kayDir KayDir) Content() string {
 }
 
 func (kayDir KayDir) Meta() string {
-	return filepath.Join(kayDir.Content(), kay_meta_dir)
+	return filepath.Join(kayDir.Content(), kayMetaDir)
 }
 
 func (kayDir KayDir) Index() string {
-	return filepath.Join(kayDir.Meta(), kay_index_dir)
+	return filepath.Join(kayDir.Meta(), kayIndexDir)
 }
 
 func (kayDir KayDir) In() bool {

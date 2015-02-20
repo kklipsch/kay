@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"log"
 	"os"
 	"time"
 
@@ -11,11 +12,8 @@ import (
 func main() {
 	err := NewKay().Run(os.Args)
 	if err != nil {
-		fmt.Fprintln(os.Stderr, err.Error())
-		os.Exit(1)
+		log.Fatal(err)
 	}
-
-	os.Exit(0)
 }
 
 func NewKay() *cli.App {
@@ -100,7 +98,7 @@ func NewKay() *cli.App {
 }
 
 func inKay(name string) func(c *cli.Context) error {
-	return KayBased(func(c *cli.Context, kayDir KayDir, index *index) error {
+	return KayBased(func(c *cli.Context, kayDir KayDir, index index) error {
 		fmt.Printf(name)
 		return nil
 	})
