@@ -20,9 +20,9 @@ $(PACK_NAME): $(EXEC_NAME)
 package: $(PACK_NAME)
 
 test: 
-	go test
+	go test ./...
 
-integration: $(PACK_NAME)
+integration: clean $(PACK_NAME)
 	ansible-playbook -i integration/local integration/test.yml --extra-vars "kay_package=$(PACK_NAME)"
 
 install: $(PACK_NAME)
