@@ -5,9 +5,10 @@ import (
 	"os"
 
 	"github.com/kklipsch/cli"
+	"github.com/kklipsch/kay/index"
 )
 
-func KayBased(action func(c *cli.Context, kayDir KayDir, index index) error) func(c *cli.Context) error {
+func KayBased(action func(c *cli.Context, kayDir KayDir, i index.Index) error) func(c *cli.Context) error {
 	return func(c *cli.Context) error {
 		kayDir, err := GetKayDir()
 		if err != nil {
@@ -18,17 +19,12 @@ func KayBased(action func(c *cli.Context, kayDir KayDir, index index) error) fun
 			return fmt.Errorf("This is not a kay directory.")
 		}
 
-		index, indexerr := BuildIndex(kayDir.Index())
-		if indexerr != nil {
-			return indexerr
+		i, indexErr := index.IndexDirectory(kayDir.Index())
+		if indexErr != nil {
+			return indexErr
 		}
 
-		actionerr := action(c, kayDir, index)
-		if actionerr != nil {
-			return actionerr
-		}
-
-		return WriteIndex(kayDir.Index(), index)
+		return action(c, kayDir, i)
 	}
 }
 

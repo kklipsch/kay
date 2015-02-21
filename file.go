@@ -3,9 +3,11 @@ package main
 import (
 	"io/ioutil"
 	"os"
+
+	"github.com/kklipsch/kay/index"
 )
 
-func GetFilesFromDir(path string) ([]File, error) {
+func GetFilesFromDir(path string) ([]index.File, error) {
 	dir, err := ioutil.ReadDir(path)
 	if err != nil {
 		return nil, err
@@ -14,12 +16,12 @@ func GetFilesFromDir(path string) ([]File, error) {
 	return getFilesFromList(path, dir), nil
 }
 
-func getFilesFromList(path string, content []os.FileInfo) []File {
+func getFilesFromList(path string, content []os.FileInfo) []index.File {
 	//is it bad to over allocate an array in go?
-	files := make([]File, 0)
+	files := make([]index.File, 0)
 	for _, f := range content {
 		if !f.IsDir() {
-			files = append(files, File(f.Name()))
+			files = append(files, index.File(f.Name()))
 		}
 	}
 	return files
