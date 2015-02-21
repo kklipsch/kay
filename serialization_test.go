@@ -5,6 +5,8 @@ import (
 	"path/filepath"
 	"testing"
 	"time"
+
+	"github.com/kklipsch/kay/tempdir"
 )
 
 func TestSerializingOneRecordBackAndForth(t *testing.T) {
@@ -23,7 +25,7 @@ func TestSerializingOneRecordBackAndForth(t *testing.T) {
 }
 
 func TestSerializationBackAndForth(t *testing.T) {
-	InTempDir(t, "serialization_back_forth", func(dir string) {
+	tempdir.In("serialization_back_forth", func(dir string) {
 		indexdir := filepath.Join(dir, "foo", "bar")
 		FailIfError(t, os.MkdirAll(dir, 0755), "couldnt create index dir for serialization")
 
