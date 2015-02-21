@@ -2,21 +2,8 @@ package main
 
 import (
 	"fmt"
-	"io/ioutil"
-	"os"
 	"testing"
 )
-
-func InTempDir(t *testing.T, label string, action func(string)) {
-	testdir, err := ioutil.TempDir("", label)
-	if err != nil {
-		t.Fatalf("Could not create temp dir for %s: %v", label, err)
-	} else {
-		defer os.RemoveAll(testdir)
-	}
-
-	action(testdir)
-}
 
 func Assert(t *testing.T, shouldPass bool, msg string) {
 	if !shouldPass {
