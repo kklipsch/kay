@@ -7,6 +7,8 @@ import (
 	"os"
 	"path"
 	"time"
+
+	"github.com/kklipsch/kay/chapter"
 )
 
 type dirBasedIndex string
@@ -32,7 +34,7 @@ func validateIndexDirectory(path string) error {
 	return nil
 }
 
-func (this dirBasedIndex) AddRecord(file File, record *Record) (*Record, error) {
+func (this dirBasedIndex) AddChapter(chap chapter.Chapter, record *Record) (*Record, error) {
 	now := time.Now()
 	record.LastWritten = now
 
@@ -41,18 +43,18 @@ func (this dirBasedIndex) AddRecord(file File, record *Record) (*Record, error) 
 		return nil, jsonErr
 	}
 
-	if writeErr := ioutil.WriteFile(this.FullPath(file), json, 600); writeErr != nil {
+	if writeErr := ioutil.WriteFile(this.FullPath(chap), json, 600); writeErr != nil {
 		return nil, writeErr
 	}
 
 	return record, nil
 }
 
-func (this dirBasedIndex) FullPath(file File) string {
-	return path.Join(string(this), string(file))
+func (this dirBasedIndex) FullPath(chap chapter.Chapter) string {
+	return path.Join(string(this), string(chap))
 }
 
-func (this dirBasedIndex) ContainsFile(file File) bool {
-	_, err := os.Stat(this.FullPath(file))
+func (this dirBasedIndex) ContainsChapter(chap chapter.Chapter) bool {
+	_, err := os.Stat(this.FullPath(chap))
 	return err == nil
 }

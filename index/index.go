@@ -1,9 +1,12 @@
 package index
 
-import "time"
+import (
+	"time"
+
+	"github.com/kklipsch/kay/chapter"
+)
 
 type Year int
-type File string
 type Tag string
 type Note string
 
@@ -20,6 +23,6 @@ func NewRecord(year Year, note Note, tags ...Tag) *Record {
 }
 
 type Index interface {
-	AddRecord(file File, record *Record) (*Record, error)
-	ContainsFile(file File) bool
+	AddChapter(chap chapter.Chapter, record *Record) (*Record, error)
+	ContainsChapter(chap chapter.Chapter) bool
 }

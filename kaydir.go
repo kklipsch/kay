@@ -4,7 +4,7 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/kklipsch/kay/index"
+	"github.com/kklipsch/kay/chapter"
 )
 
 const kayMetaDir string = ".kay"
@@ -37,6 +37,6 @@ func (kayDir KayDir) Make() error {
 	return os.MkdirAll(kayDir.Index(), 0755)
 }
 
-func (kayDir KayDir) ContentFiles() ([]index.File, error) {
-	return GetFilesFromDir(kayDir.Content())
+func (kayDir KayDir) ContentChapters() ([]chapter.Chapter, error) {
+	return chapter.GetChaptersFromPath(kayDir.Content())
 }
