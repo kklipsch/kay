@@ -4,12 +4,14 @@ import (
 	"fmt"
 
 	"github.com/kklipsch/cli"
+	"github.com/kklipsch/kay/chapter"
 	"github.com/kklipsch/kay/index"
+	"github.com/kklipsch/kay/kaydir"
 )
 
-func Add(c *cli.Context, kayDir KayDir, i index.Index) error {
-	file := index.File(c.Args().First())
-	year, year_parsed, err := ParseYear(file)
+func Add(c *cli.Context, kd kaydir.KayDir, i index.Index) error {
+	chapter := chapter.Chapter(c.Args().First())
+	year, year_parsed, err := ParseYear(chapter)
 	if err != nil {
 		return err
 	}
@@ -18,11 +20,11 @@ func Add(c *cli.Context, kayDir KayDir, i index.Index) error {
 		return fmt.Errorf("No year provided or parsed!")
 	}
 
-	_, addErr := i.AddRecord(file, index.NewRecord(year, index.Note("")))
+	_, addErr := i.AddChapter(chapter, index.NewRecord(year, index.Note("")))
 	return addErr
 }
 
 //stubbed out
-func ParseYear(file index.File) (index.Year, bool, error) {
+func ParseYear(chapter chapter.Chapter) (index.Year, bool, error) {
 	return 1941, true, nil
 }
