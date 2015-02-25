@@ -6,14 +6,26 @@ import (
 	"io/ioutil"
 	"os"
 	"path"
+	"path/filepath"
 	"time"
 
 	"github.com/kklipsch/kay/chapter"
+	"github.com/kklipsch/kay/kaydir"
 )
 
 type dirBasedIndex string
 
-func IndexDirectory(path string) (Index, error) {
+func IndexPath(kd kaydir.KayDir) string {
+	return filepath.Join(string(kd), "index")
+}
+
+func Make(kd kaydir.KayDir) error {
+	return os.MkdirAll(IndexPath(kd), 0755)
+}
+
+func IndexDirectory(kd kaydir.KayDir) (Index, error) {
+	path := IndexPath(kd)
+
 	if err := validateIndexDirectory(path); err != nil {
 		return nil, err
 	}

@@ -2,7 +2,6 @@ package main
 
 import (
 	"os"
-	"path/filepath"
 
 	"github.com/kklipsch/cli"
 	"github.com/kklipsch/kay/index"
@@ -16,7 +15,7 @@ func KayBased(action func(c *cli.Context, kd kaydir.KayDir, i index.Index) error
 			return err
 		}
 
-		i, indexErr := index.IndexDirectory(filepath.Join(string(kd), "index"))
+		i, indexErr := index.IndexDirectory(kd)
 		if indexErr != nil {
 			return indexErr
 		}

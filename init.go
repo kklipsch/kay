@@ -4,6 +4,7 @@ import (
 	"os"
 
 	"github.com/kklipsch/cli"
+	"github.com/kklipsch/kay/index"
 	"github.com/kklipsch/kay/kaydir"
 )
 
@@ -13,6 +14,10 @@ func Initialize(c *cli.Context) error {
 		return err
 	}
 
-	_, err = kaydir.Make(pwd)
-	return err
+	kd, makeErr := kaydir.Make(pwd)
+	if makeErr != nil {
+		return err
+	}
+
+	return index.Make(kd)
 }
