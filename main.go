@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"github.com/kklipsch/cli"
+	"github.com/kklipsch/kay/commands"
 	"github.com/kklipsch/kay/index"
 	"github.com/kklipsch/kay/kaydir"
 )
@@ -54,7 +55,7 @@ func NewKay() *cli.App {
 		{
 			Name:   "add",
 			Usage:  "[files] - add files to an index.",
-			Action: KayBased(Add),
+			Action: KayBased(commands.Add),
 			Flags: []cli.Flag{
 				cli.IntFlag{
 					Name:  "year, y",
@@ -87,12 +88,12 @@ func NewKay() *cli.App {
 		{
 			Name:   "stat",
 			Usage:  "See stats on the current kay directory.",
-			Action: KayBased(Stat),
+			Action: KayBased(commands.Stat),
 		},
 		{
 			Name:   "init",
 			Usage:  "initialize a new kay directory",
-			Action: Initialize,
+			Action: commands.Initialize,
 		},
 	}
 
