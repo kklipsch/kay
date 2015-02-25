@@ -1,15 +1,14 @@
 package commands
 
 import (
-	"os"
-
 	"github.com/kklipsch/cli"
 	"github.com/kklipsch/kay/index"
 	"github.com/kklipsch/kay/kaydir"
+	"github.com/kklipsch/kay/wd"
 )
 
 func Initialize(c *cli.Context) error {
-	pwd, err := os.Getwd()
+	pwd, err := wd.Get()
 	if err != nil {
 		return err
 	}

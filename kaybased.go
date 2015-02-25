@@ -1,11 +1,10 @@
 package main
 
 import (
-	"os"
-
 	"github.com/kklipsch/cli"
 	"github.com/kklipsch/kay/index"
 	"github.com/kklipsch/kay/kaydir"
+	"github.com/kklipsch/kay/wd"
 )
 
 func KayBased(action func(c *cli.Context, kd kaydir.KayDir, i index.Index) error) func(c *cli.Context) error {
@@ -25,7 +24,7 @@ func KayBased(action func(c *cli.Context, kd kaydir.KayDir, i index.Index) error
 }
 
 func GetKayDir() (kaydir.KayDir, error) {
-	pwd, err := os.Getwd()
+	pwd, err := wd.Get()
 	if err != nil {
 		return "", err
 	}

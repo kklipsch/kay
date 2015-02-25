@@ -4,12 +4,14 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+
+	"github.com/kklipsch/kay/wd"
 )
 
 type KayDir string
 
-func Get(start string) (KayDir, error) {
-	path := metaPath(start)
+func Get(working wd.WorkingDirectory) (KayDir, error) {
+	path := metaPath(working)
 	if _, err := os.Stat(path); err != nil {
 		return "", fmt.Errorf("This is not a kay directory.")
 	}
@@ -18,7 +20,7 @@ func Get(start string) (KayDir, error) {
 
 }
 
-func Make(in string) (KayDir, error) {
+func Make(in wd.WorkingDirectory) (KayDir, error) {
 	path := metaPath(in)
 	if err := os.MkdirAll(path, 0755); err != nil {
 		return "", err
@@ -31,6 +33,6 @@ func Make(in string) (KayDir, error) {
 	return KayDir(path), nil
 }
 
-func metaPath(base string) string {
-	return filepath.Join(base, ".kay")
+func metaPath(base wd.WorkingDirectory) string {
+	return filepath.Join(string(base), ".kay")
 }
