@@ -19,12 +19,6 @@ func main() {
 	}
 }
 
-func KayBased(cmd func(commands.Arguments, kaydir.KayDir, wd.WorkingDirectory) error) func(*cli.Context) error {
-	return func(context *cli.Context) error {
-		return commands.RunCommand(context, cmd)
-	}
-}
-
 func NewKay() *cli.App {
 	app := cli.NewApp()
 	app.Name = "kay"
@@ -99,11 +93,26 @@ func NewKay() *cli.App {
 		{
 			Name:   "init",
 			Usage:  "initialize a new kay directory",
-			Action: func(context *cli.Context) error { return commands.Initialize(context) },
+			Action: Init,
 		},
 	}
 
 	return app
+}
+
+func Init(context *cli.Context) error {
+	pwd, err := wd.Get()
+	if err != nil {
+		return err
+	}
+
+	return commands.Initialize(context, pwd)
+}
+
+func KayBased(cmd func(commands.Arguments, kaydir.KayDir, wd.WorkingDirectory) error) func(*cli.Context) error {
+	return func(context *cli.Context) error {
+		return commands.RunCommand(context, cmd)
+	}
 }
 
 func inKay(name string) func(c *cli.Context) error {

@@ -6,15 +6,10 @@ import (
 	"github.com/kklipsch/kay/wd"
 )
 
-func Initialize(arguments Arguments) error {
-	pwd, err := wd.Get()
-	if err != nil {
-		return err
-	}
-
-	kd, makeErr := kaydir.Make(pwd)
+func Initialize(arguments Arguments, working wd.WorkingDirectory) error {
+	kd, makeErr := kaydir.Make(working)
 	if makeErr != nil {
-		return err
+		return makeErr
 	}
 
 	return index.Make(kd)
