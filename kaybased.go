@@ -1,37 +1,34 @@
 package main
 
 import (
-	"fmt"
 	"os"
+	"path/filepath"
 
 	"github.com/kklipsch/cli"
 	"github.com/kklipsch/kay/index"
+	"github.com/kklipsch/kay/kaydir"
 )
 
-func KayBased(action func(c *cli.Context, kayDir KayDir, i index.Index) error) func(c *cli.Context) error {
+func KayBased(action func(c *cli.Context, kd kaydir.KayDir, i index.Index) error) func(c *cli.Context) error {
 	return func(c *cli.Context) error {
-		kayDir, err := GetKayDir()
+		kd, err := GetKayDir()
 		if err != nil {
 			return err
 		}
 
-		if !kayDir.In() {
-			return fmt.Errorf("This is not a kay directory.")
-		}
-
-		i, indexErr := index.IndexDirectory(kayDir.Index())
+		i, indexErr := index.IndexDirectory(filepath.Join(string(kd), "index"))
 		if indexErr != nil {
 			return indexErr
 		}
 
-		return action(c, kayDir, i)
+		return action(c, kd, i)
 	}
 }
 
-func GetKayDir() (KayDir, error) {
+func GetKayDir() (kaydir.KayDir, error) {
 	pwd, err := os.Getwd()
 	if err != nil {
 		return "", err
 	}
-	return KayDir(pwd), nil
+	return kaydir.Get(pwd)
 }

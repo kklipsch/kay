@@ -8,6 +8,7 @@ import (
 
 	"github.com/kklipsch/cli"
 	"github.com/kklipsch/kay/index"
+	"github.com/kklipsch/kay/kaydir"
 )
 
 func main() {
@@ -99,7 +100,7 @@ func NewKay() *cli.App {
 }
 
 func inKay(name string) func(c *cli.Context) error {
-	return KayBased(func(c *cli.Context, kayDir KayDir, i index.Index) error {
+	return KayBased(func(c *cli.Context, kd kaydir.KayDir, i index.Index) error {
 		fmt.Printf(name)
 		return nil
 	})
