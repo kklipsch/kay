@@ -13,7 +13,7 @@ import (
 )
 
 func TestCantCreateAnIndexOffANonExistentDir(t *testing.T) {
-	if _, err := IndexDirectory(kaydir.KayDir("non-existent-path")); err == nil {
+	if _, err := Get(kaydir.KayDir("non-existent-path")); err == nil {
 		t.Error("No error on non-existent path")
 	}
 }
@@ -23,7 +23,7 @@ func TestCantCreateAnIndexOffAFile(t *testing.T) {
 		file := path.Join(dir, "failfile")
 		ioutil.WriteFile(file, []byte("failfile"), 600)
 
-		if _, err := IndexDirectory(kaydir.KayDir(file)); err == nil {
+		if _, err := Get(kaydir.KayDir(file)); err == nil {
 			t.Errorf("No error on file path: %v", err)
 		}
 	})
@@ -32,7 +32,7 @@ func TestCantCreateAnIndexOffAFile(t *testing.T) {
 func TestDirBasedConstructorPasses(t *testing.T) {
 	tempdir.In("index-constructor", func(dir string) {
 		Make(kaydir.KayDir(dir))
-		if _, err := IndexDirectory(kaydir.KayDir(dir)); err != nil {
+		if _, err := Get(kaydir.KayDir(dir)); err != nil {
 			t.Errorf("Error on construction: %v", err)
 		}
 	})
@@ -84,8 +84,8 @@ func TestIndexSurvivesMemoryLifetime(t *testing.T) {
 		kd := kaydir.KayDir(dir)
 		chap := chapter.Chapter("foo")
 		Make(kd)
-		index1, _ := IndexDirectory(kd)
-		if index2, _ := IndexDirectory(kd); index2 != nil {
+		index1, _ := Get(kd)
+		if index2, _ := Get(kd); index2 != nil {
 			index2.AddChapter(chap, NewRecord(Year(1928), Note("notey")))
 		}
 
@@ -98,7 +98,7 @@ func TestIndexSurvivesMemoryLifetime(t *testing.T) {
 func withTempIndex(label string, test func(dirBasedIndex)) error {
 	return tempdir.In(label, func(dir string) {
 		Make(kaydir.KayDir(dir))
-		index, _ := IndexDirectory(kaydir.KayDir(dir))
+		index, _ := Get(kaydir.KayDir(dir))
 		test(index.(dirBasedIndex))
 	})
 }

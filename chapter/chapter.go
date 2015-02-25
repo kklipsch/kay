@@ -3,6 +3,8 @@ package chapter
 import (
 	"io/ioutil"
 	"os"
+
+	"github.com/kklipsch/kay/wd"
 )
 
 type Chapter string
@@ -18,8 +20,8 @@ func GetChaptersFromFileList(content []os.FileInfo) []Chapter {
 	return chapters
 }
 
-func GetChaptersFromPath(path string) ([]Chapter, error) {
-	dir, err := ioutil.ReadDir(path)
+func GetChaptersFromPath(working wd.WorkingDirectory) ([]Chapter, error) {
+	dir, err := ioutil.ReadDir(string(working))
 	if err != nil {
 		return nil, err
 	}

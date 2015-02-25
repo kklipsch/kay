@@ -2,14 +2,19 @@ package commands
 
 import "fmt"
 import (
-	"github.com/kklipsch/cli"
 	"github.com/kklipsch/kay/chapter"
 	"github.com/kklipsch/kay/index"
 	"github.com/kklipsch/kay/kaydir"
+	"github.com/kklipsch/kay/wd"
 )
 
-func Stat(c *cli.Context, kd kaydir.KayDir, i index.Index) error {
-	all, err := chapter.GetChaptersFromPath(".")
+func Stat(arguments Arguments, kd kaydir.KayDir, working wd.WorkingDirectory) error {
+	i, indexErr := index.Get(kd)
+	if indexErr != nil {
+		return indexErr
+	}
+
+	all, err := chapter.GetChaptersFromPath(working)
 	if err != nil {
 		return err
 	}

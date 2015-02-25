@@ -1,26 +1,20 @@
 package commands
 
 import (
-	"fmt"
-
-	"github.com/kklipsch/cli"
 	"github.com/kklipsch/kay/chapter"
 	"github.com/kklipsch/kay/index"
 	"github.com/kklipsch/kay/kaydir"
+	"github.com/kklipsch/kay/wd"
 )
 
-func Add(c *cli.Context, kd kaydir.KayDir, i index.Index) error {
-	chapter := chapter.Chapter(c.Args().First())
-	year, year_parsed, err := ParseYear(chapter)
-	if err != nil {
-		return err
+func Add(arguments Arguments, kd kaydir.KayDir, working wd.WorkingDirectory) error {
+	i, indexErr := index.Get(kd)
+	if indexErr != nil {
+		return indexErr
 	}
 
-	if !year_parsed {
-		return fmt.Errorf("No year provided or parsed!")
-	}
-
-	_, addErr := i.AddChapter(chapter, index.NewRecord(year, index.Note("")))
+	chapter := chapter.Chapter("1941.test1.2015_02.doc")
+	_, addErr := i.AddChapter(chapter, index.NewRecord(1941, index.Note("")))
 	return addErr
 }
 

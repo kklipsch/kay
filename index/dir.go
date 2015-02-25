@@ -23,7 +23,7 @@ func Make(kd kaydir.KayDir) error {
 	return os.MkdirAll(IndexPath(kd), 0755)
 }
 
-func IndexDirectory(kd kaydir.KayDir) (Index, error) {
+func Get(kd kaydir.KayDir) (Index, error) {
 	path := IndexPath(kd)
 
 	if err := validateIndexDirectory(path); err != nil {

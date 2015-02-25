@@ -8,14 +8,20 @@ import (
 
 	"github.com/kklipsch/cli"
 	"github.com/kklipsch/kay/commands"
-	"github.com/kklipsch/kay/index"
 	"github.com/kklipsch/kay/kaydir"
+	"github.com/kklipsch/kay/wd"
 )
 
 func main() {
 	err := NewKay().Run(os.Args)
 	if err != nil {
 		log.Fatal(err)
+	}
+}
+
+func KayBased(cmd func(commands.Arguments, kaydir.KayDir, wd.WorkingDirectory) error) func(*cli.Context) error {
+	return func(context *cli.Context) error {
+		return commands.RunCommand(context, cmd)
 	}
 }
 
@@ -93,7 +99,7 @@ func NewKay() *cli.App {
 		{
 			Name:   "init",
 			Usage:  "initialize a new kay directory",
-			Action: commands.Initialize,
+			Action: func(context *cli.Context) error { return commands.Initialize(context) },
 		},
 	}
 
@@ -101,7 +107,7 @@ func NewKay() *cli.App {
 }
 
 func inKay(name string) func(c *cli.Context) error {
-	return KayBased(func(c *cli.Context, kd kaydir.KayDir, i index.Index) error {
+	return KayBased(func(args commands.Arguments, kd kaydir.KayDir, working wd.WorkingDirectory) error {
 		fmt.Printf(name)
 		return nil
 	})

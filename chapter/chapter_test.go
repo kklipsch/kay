@@ -8,6 +8,7 @@ import (
 	"testing"
 
 	"github.com/kklipsch/kay/tempdir"
+	"github.com/kklipsch/kay/wd"
 )
 
 func TestDeepEqual(t *testing.T) {
@@ -29,7 +30,7 @@ func TestGetChaptersFromPath(t *testing.T) {
 		ioutil.WriteFile(filepath.Join(dir, "test2"), []byte("test2"), 0777)
 
 		expected := []string{"test1", "test2"}
-		chapters, _ := GetChaptersFromPath(dir)
+		chapters, _ := GetChaptersFromPath(wd.WorkingDirectory(dir))
 		if !reflect.DeepEqual(MapChaptersToString(chapters), expected) {
 			t.Errorf("Expected %v Got %v", expected, chapters)
 		}
@@ -43,7 +44,7 @@ func TestGetChaptersFromPathFiltersDirectories(t *testing.T) {
 		ioutil.WriteFile(filepath.Join(dir, "test3"), []byte("test3"), 0777)
 
 		expected := []string{"test1", "test3"}
-		chapters, _ := GetChaptersFromPath(dir)
+		chapters, _ := GetChaptersFromPath(wd.WorkingDirectory(dir))
 		if !reflect.DeepEqual(MapChaptersToString(chapters), expected) {
 			t.Errorf("Expected %v Got %v", expected, chapters)
 		}
