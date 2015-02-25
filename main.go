@@ -111,7 +111,12 @@ func Init(context *cli.Context) error {
 
 func KayBased(cmd func(commands.Arguments, kaydir.KayDir, wd.WorkingDirectory) error) func(*cli.Context) error {
 	return func(context *cli.Context) error {
-		return commands.RunCommand(context, cmd)
+		pwd, err := wd.Get()
+		if err != nil {
+			return err
+		}
+
+		return commands.RunWithKayDir(context, pwd, cmd)
 	}
 }
 
