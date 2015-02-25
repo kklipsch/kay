@@ -6,6 +6,7 @@ import (
 	"path/filepath"
 	"testing"
 
+	"github.com/kklipsch/kay/index"
 	"github.com/kklipsch/kay/tempdir"
 )
 
@@ -20,7 +21,7 @@ func TestGetOnlyFilesFromDir(t *testing.T) {
 	})
 }
 
-func assertFiles(t *testing.T, files []File, expected []string, dir string, msg string) {
+func assertFiles(t *testing.T, files []index.File, expected []string, dir string, msg string) {
 	if len(files) != len(expected) {
 		t.Fatalf("Expected %v Got %v: %s", expected, files, msg)
 	}

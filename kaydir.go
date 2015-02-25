@@ -3,6 +3,8 @@ package main
 import (
 	"os"
 	"path/filepath"
+
+	"github.com/kklipsch/kay/index"
 )
 
 const kayMetaDir string = ".kay"
@@ -28,9 +30,13 @@ func (kayDir KayDir) In() bool {
 }
 
 func (kayDir KayDir) Make() error {
-	return os.MkdirAll(kayDir.Meta(), 0755)
+	err := os.MkdirAll(kayDir.Meta(), 0755)
+	if err != nil {
+		return err
+	}
+	return os.MkdirAll(kayDir.Index(), 0755)
 }
 
-func (kayDir KayDir) ContentFiles() ([]File, error) {
+func (kayDir KayDir) ContentFiles() ([]index.File, error) {
 	return GetFilesFromDir(kayDir.Content())
 }
