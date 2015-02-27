@@ -1,0 +1,40 @@
+- name: Attempt to add a non parseable name without year - should fail. 
+  command: chdir="{{ test_directory.stdout }}" "{{ kay_app.stdout }}" add test4.doc
+  ignore_errors: True
+  register: bad_parse_fail
+
+- name: d
+  debug: var=bad_parse_fail
+
+- name: Add should not have a good rc on failure
+  assert:
+        that:
+        - "bad_parse_fail.rc != 0"
+
+- name: Stat after parse add failure
+  command: chdir="{{ test_directory.stdout }}" "{{ kay_app.stdout }}" stat
+  register: stat_parse1_call 
+
+- name: Stat has missing non-parseable file 
+  assert: 
+        that: 
+        - "'? 1942.test2.2015_02.docx' in stat_parse1_call.stdout"
+        - "'? 1943.test3.2015_02.doc' in stat_parse1_call.stdout"
+        - "'? test4.doc' in stat_parse1_call.stdout"
+
+- name: Add with year 
+  command: chdir="{{ test_directory.stdout }}" "{{ kay_app.stdout }}" add --year 1944 test4.doc
+
+- name: Stat after year add success
+  command: chdir="{{ test_directory.stdout }}" "{{ kay_app.stdout }}" stat
+  register: stat_yearadd_call 
+
+- name: Stat has still missing files 
+  assert: 
+        that: 
+        - "'? 1942.test2.2015_02.docx' in stat_yearadd_call.stdout"
+        - "'? 1943.test3.2015_02.doc' in stat_yearadd_call.stdout"
+
+- name: Stat does not have added by year
+  fail: msg="File is not in index '{{ stat_yearadd_call.stdout }}'"
+  when: '"? test4.doc" in stat_yearadd_call.stdout'
