@@ -7,7 +7,9 @@ import (
 	"time"
 
 	"github.com/kklipsch/cli"
+	"github.com/kklipsch/kay/chapter"
 	"github.com/kklipsch/kay/commands"
+	"github.com/kklipsch/kay/index"
 	"github.com/kklipsch/kay/kaydir"
 	"github.com/kklipsch/kay/wd"
 )
@@ -106,7 +108,7 @@ func Init(context *cli.Context) error {
 		return err
 	}
 
-	return commands.Initialize(context, pwd)
+	return commands.Initialize(toArguments(context), pwd)
 }
 
 func KayBased(cmd func(commands.Arguments, kaydir.KayDir, wd.WorkingDirectory) error) func(*cli.Context) error {
@@ -116,7 +118,7 @@ func KayBased(cmd func(commands.Arguments, kaydir.KayDir, wd.WorkingDirectory) e
 			return err
 		}
 
-		return commands.RunWithKayDir(context, pwd, cmd)
+		return commands.RunWithKayDir(toArguments(context), pwd, cmd)
 	}
 }
 
@@ -125,4 +127,17 @@ func inKay(name string) func(c *cli.Context) error {
 		fmt.Printf(name)
 		return nil
 	})
+}
+
+func toArguments(context *cli.Context) commands.Arguments {
+	return commands.Arguments{toChapters(context), index.Year(0000)}
+}
+
+func toChapters(context *cli.Context) []chapter.Chapter {
+	chapters := make([]chapter.Chapter, 0)
+	for _, arg := range context.Args() {
+		fmt.Printf("%v\n", arg)
+		chapters = append(chapters, chapter.Chapter(arg))
+	}
+	return chapters
 }

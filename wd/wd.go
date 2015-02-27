@@ -1,6 +1,9 @@
 package wd
 
-import "os"
+import (
+	"os"
+	"path/filepath"
+)
 
 type WorkingDirectory string
 
@@ -11,4 +14,8 @@ func Get() (WorkingDirectory, error) {
 	}
 
 	return WorkingDirectory(pwd), nil
+}
+
+func (working WorkingDirectory) Path(rest string) string {
+	return filepath.Join(string(working), rest)
 }

@@ -4,6 +4,7 @@ import (
 	"io/ioutil"
 	"os"
 	"path"
+	"reflect"
 	"testing"
 	"time"
 
@@ -19,7 +20,7 @@ func TestCantCreateAnIndexOffANonExistentDir(t *testing.T) {
 }
 
 func TestCantCreateAnIndexOffAFile(t *testing.T) {
-	tempdir.In("file-fail-index", func(dir string) {
+	tempdir.In(func(dir string) {
 		file := path.Join(dir, "failfile")
 		ioutil.WriteFile(file, []byte("failfile"), 600)
 
@@ -30,7 +31,7 @@ func TestCantCreateAnIndexOffAFile(t *testing.T) {
 }
 
 func TestDirBasedConstructorPasses(t *testing.T) {
-	tempdir.In("index-constructor", func(dir string) {
+	tempdir.In(func(dir string) {
 		Make(kaydir.KayDir(dir))
 		if _, err := Get(kaydir.KayDir(dir)); err != nil {
 			t.Errorf("Error on construction: %v", err)
@@ -39,7 +40,7 @@ func TestDirBasedConstructorPasses(t *testing.T) {
 }
 
 func TestAddWritesFile(t *testing.T) {
-	withTempIndex("add-writes-file", func(index dirBasedIndex) {
+	withTempIndex(func(index dirBasedIndex) {
 		chap := chapter.Chapter("boo")
 		index.AddChapter(chap, NewRecord(Year(1928), Note("notes")))
 		if _, err := os.Stat(index.FullPath(chap)); err != nil {
@@ -49,7 +50,7 @@ func TestAddWritesFile(t *testing.T) {
 }
 
 func TestAddChapter(t *testing.T) {
-	withTempIndex("add-chapter", func(index dirBasedIndex) {
+	withTempIndex(func(index dirBasedIndex) {
 		chap := chapter.Chapter("foo")
 		index.AddChapter(chap, NewRecord(Year(1928), Note("notey"), Tag("tag1"), Tag("tag2")))
 		if !index.ContainsChapter(chap) {
@@ -59,7 +60,7 @@ func TestAddChapter(t *testing.T) {
 }
 
 func TestAddChapterUpdatesLastWritten(t *testing.T) {
-	withTempIndex("last-written", func(index dirBasedIndex) {
+	withTempIndex(func(index dirBasedIndex) {
 		record := NewRecord(Year(1928), Note("notey"), Tag("tag1"), Tag("tag2"))
 		before := time.Now()
 		record, _ = index.AddChapter(chapter.Chapter("foo"), record)
@@ -70,7 +71,7 @@ func TestAddChapterUpdatesLastWritten(t *testing.T) {
 }
 
 func TestCannotAddSameChapterTwice(t *testing.T) {
-	withTempIndex("last-written", func(index dirBasedIndex) {
+	withTempIndex(func(index dirBasedIndex) {
 		chap := chapter.Chapter("foo")
 		index.AddChapter(chap, NewRecord(Year(1928), Note("notey"), Tag("tag1"), Tag("tag2")))
 		if _, err := index.AddChapter(chap, NewRecord(Year(1928), Note("notey"), Tag("tag1"), Tag("tag2"))); err == nil {
@@ -80,7 +81,7 @@ func TestCannotAddSameChapterTwice(t *testing.T) {
 }
 
 func TestIndexSurvivesMemoryLifetime(t *testing.T) {
-	tempdir.In("index-survives", func(dir string) {
+	tempdir.In(func(dir string) {
 		kd := kaydir.KayDir(dir)
 		chap := chapter.Chapter("foo")
 		Make(kd)
@@ -95,8 +96,46 @@ func TestIndexSurvivesMemoryLifetime(t *testing.T) {
 	})
 }
 
-func withTempIndex(label string, test func(dirBasedIndex)) error {
-	return tempdir.In(label, func(dir string) {
+func TestGetRecord(t *testing.T) {
+	tempdir.In(func(dir string) {
+		kd := kaydir.KayDir(dir)
+		chap := chapter.Chapter("foo")
+
+		Make(kd)
+
+		index1, _ := Get(kd)
+		rec, _ := index1.AddChapter(chap, NewRecord(Year(1928), Note("notey")))
+
+		index2, _ := Get(kd)
+		got, getErr := index2.GetRecord(chap)
+
+		if getErr != nil {
+			t.Errorf("Error on get: %v", getErr)
+		}
+
+		if !reflect.DeepEqual(rec, got) {
+			t.Errorf("Expected %v Got %v", rec, got)
+		}
+	})
+}
+
+func TestGetNonexistantRecord(t *testing.T) {
+	withTempIndex(func(index dirBasedIndex) {
+		rec, err := index.GetRecord(chapter.Chapter("foo"))
+
+		if rec != nil {
+			t.Errorf("Record should be empty: %v", rec)
+		}
+
+		if err == nil {
+			t.Errorf("Error should not be empty")
+		}
+
+	})
+}
+
+func withTempIndex(test func(dirBasedIndex)) error {
+	return tempdir.In(func(dir string) {
 		Make(kaydir.KayDir(dir))
 		index, _ := Get(kaydir.KayDir(dir))
 		test(index.(dirBasedIndex))
