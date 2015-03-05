@@ -22,13 +22,29 @@ func TestFailureIfNoIndex(t *testing.T) {
 func TestAddExplicitYear(t *testing.T) {
 	TempInit(func(w wd.WorkingDirectory, kd kaydir.KayDir) {
 
-		c := chapter.Chapter("foo")
+		c1 := chapter.Chapter("foo")
+		c2 := chapter.Chapter("moo")
+		c3 := chapter.Chapter("boo")
 
-		Add(Arguments{[]chapter.Chapter{c}, index.Year(1941)}, kd, w)
+		y := index.Year(1942)
+
+		Add(Arguments{[]chapter.Chapter{c1, c2, c3}, y}, kd, w)
 
 		i, _ := index.Get(kd)
-		if !i.ContainsChapter(c) {
-			t.Error("Add with a year argument did not add year.")
+
+		rec1, _ := i.GetRecord(c1)
+		if rec1.Year != y {
+			t.Errorf("Year 1 was incorrect: %v", rec1)
+		}
+
+		rec2, _ := i.GetRecord(c2)
+		if rec2.Year != y {
+			t.Errorf("Year 2 was incorrect: %v", rec2)
+		}
+
+		rec3, _ := i.GetRecord(c3)
+		if rec3.Year != y {
+			t.Errorf("Year 3 was incorrect: %v", rec3)
 		}
 	})
 }
