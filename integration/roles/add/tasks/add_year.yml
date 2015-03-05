@@ -3,13 +3,14 @@
   ignore_errors: True
   register: bad_parse_fail
 
-- name: d
+- name: debug incorrectly successful add call
   debug: var=bad_parse_fail
+  when: bad_parse_fail|success 
 
 - name: Add should not have a good rc on failure
   assert:
         that:
-        - "bad_parse_fail.rc != 0"
+        - "bad_parse_fail|failed"
 
 - name: Stat after parse add failure
   command: chdir="{{ test_directory.stdout }}" "{{ kay_app.stdout }}" stat
