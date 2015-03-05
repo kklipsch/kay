@@ -47,6 +47,11 @@ func validateIndexDirectory(path string) error {
 }
 
 func (this dirBasedIndex) AddChapter(chap chapter.Chapter, record *Record) (*Record, error) {
+
+	if this.ContainsChapter(chap) {
+		return nil, fmt.Errorf("Index already contains %v", chap)
+	}
+
 	now := time.Now()
 	record.LastWritten = now
 
@@ -55,7 +60,7 @@ func (this dirBasedIndex) AddChapter(chap chapter.Chapter, record *Record) (*Rec
 		return nil, jsonErr
 	}
 
-	if writeErr := ioutil.WriteFile(this.FullPath(chap), json, 600); writeErr != nil {
+	if writeErr := ioutil.WriteFile(this.FullPath(chap), json, 0600); writeErr != nil {
 		return nil, writeErr
 	}
 
@@ -69,4 +74,18 @@ func (this dirBasedIndex) FullPath(chap chapter.Chapter) string {
 func (this dirBasedIndex) ContainsChapter(chap chapter.Chapter) bool {
 	_, err := os.Stat(this.FullPath(chap))
 	return err == nil
+}
+
+func (this dirBasedIndex) GetRecord(chap chapter.Chapter) (*Record, error) {
+	file, readErr := ioutil.ReadFile(this.FullPath(chap))
+	if readErr != nil {
+		return nil, readErr
+	}
+
+	var record Record
+	if jsonErr := json.Unmarshal(file, &record); jsonErr != nil {
+		return nil, jsonErr
+	}
+
+	return &record, nil
 }

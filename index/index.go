@@ -25,4 +25,5 @@ func NewRecord(year Year, note Note, tags ...Tag) *Record {
 type Index interface {
 	AddChapter(chap chapter.Chapter, record *Record) (*Record, error)
 	ContainsChapter(chap chapter.Chapter) bool
+	GetRecord(chap chapter.Chapter) (*Record, error)
 }

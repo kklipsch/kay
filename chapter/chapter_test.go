@@ -3,7 +3,6 @@ package chapter
 import (
 	"io/ioutil"
 	"os"
-	"path/filepath"
 	"reflect"
 	"testing"
 
@@ -25,12 +24,12 @@ func TestDeepEqual(t *testing.T) {
 }
 
 func TestGetChaptersFromPath(t *testing.T) {
-	tempdir.In("get-chapters-from-path", func(dir string) {
-		ioutil.WriteFile(filepath.Join(dir, "test1"), []byte("test1"), 0777)
-		ioutil.WriteFile(filepath.Join(dir, "test2"), []byte("test2"), 0777)
+	tempdir.TempWd(func(dir wd.WorkingDirectory) {
+		ioutil.WriteFile(dir.Path("test1"), []byte("test1"), 0777)
+		ioutil.WriteFile(dir.Path("test2"), []byte("test2"), 0777)
 
 		expected := []string{"test1", "test2"}
-		chapters, _ := GetChaptersFromPath(wd.WorkingDirectory(dir))
+		chapters, _ := GetChaptersFromPath(dir)
 		if !reflect.DeepEqual(MapChaptersToString(chapters), expected) {
 			t.Errorf("Expected %v Got %v", expected, chapters)
 		}
@@ -38,13 +37,13 @@ func TestGetChaptersFromPath(t *testing.T) {
 }
 
 func TestGetChaptersFromPathFiltersDirectories(t *testing.T) {
-	tempdir.In("get-chapters-filters-dirs", func(dir string) {
-		ioutil.WriteFile(filepath.Join(dir, "test1"), []byte("test1"), 0777)
-		os.MkdirAll(filepath.Join(dir, "test2"), 0755)
-		ioutil.WriteFile(filepath.Join(dir, "test3"), []byte("test3"), 0777)
+	tempdir.TempWd(func(dir wd.WorkingDirectory) {
+		ioutil.WriteFile(dir.Path("test1"), []byte("test1"), 0777)
+		os.MkdirAll(dir.Path("test2"), 0755)
+		ioutil.WriteFile(dir.Path("test3"), []byte("test3"), 0777)
 
 		expected := []string{"test1", "test3"}
-		chapters, _ := GetChaptersFromPath(wd.WorkingDirectory(dir))
+		chapters, _ := GetChaptersFromPath(dir)
 		if !reflect.DeepEqual(MapChaptersToString(chapters), expected) {
 			t.Errorf("Expected %v Got %v", expected, chapters)
 		}

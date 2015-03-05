@@ -9,9 +9,9 @@ import (
 )
 
 func TestRunFailsOnNoKayDir(t *testing.T) {
-	tempdir.In("run-command-fail", func(dir string) {
+	tempdir.TempWd(func(dir wd.WorkingDirectory) {
 
-		err := RunWithKayDir(nil, wd.WorkingDirectory(dir), func(args Arguments, kd kaydir.KayDir, working wd.WorkingDirectory) error {
+		err := RunWithKayDir(Arguments{}, dir, func(args Arguments, kd kaydir.KayDir, working wd.WorkingDirectory) error {
 			t.Error("Should not have been called")
 			return nil
 		})
@@ -23,12 +23,11 @@ func TestRunFailsOnNoKayDir(t *testing.T) {
 }
 
 func TestRunCommandsWithKayDir(t *testing.T) {
-	tempdir.In("run-command-fail", func(dir string) {
+	tempdir.TempWd(func(working wd.WorkingDirectory) {
 		called := false
-		working := wd.WorkingDirectory(dir)
-		Initialize(nil, working)
+		Initialize(Arguments{}, working)
 
-		RunWithKayDir(nil, working, func(args Arguments, kd kaydir.KayDir, working wd.WorkingDirectory) error {
+		RunWithKayDir(Arguments{}, working, func(args Arguments, kd kaydir.KayDir, working wd.WorkingDirectory) error {
 			called = true
 			return nil
 		})

@@ -9,16 +9,16 @@ import (
 )
 
 func TestGetFailsOnNonExistentKayDir(t *testing.T) {
-	tempdir.In("get-fails", func(dir string) {
-		if _, err := Get(wd.WorkingDirectory(dir)); err == nil {
+	tempdir.TempWd(func(dir wd.WorkingDirectory) {
+		if _, err := Get(dir); err == nil {
 			t.Error("Get did not fail on nonexistent kaydir")
 		}
 	})
 }
 
 func TestMakeCreatesDir(t *testing.T) {
-	tempdir.In("make-dir", func(dir string) {
-		kayDir, _ := Make(wd.WorkingDirectory(dir))
+	tempdir.TempWd(func(dir wd.WorkingDirectory) {
+		kayDir, _ := Make(dir)
 		stat, err := os.Stat(string(kayDir))
 		if err != nil {
 			t.Errorf("Make did not make: %v", err)
@@ -31,8 +31,7 @@ func TestMakeCreatesDir(t *testing.T) {
 }
 
 func TestGetWorksIfExists(t *testing.T) {
-	tempdir.In("get-works", func(dir string) {
-		working := wd.WorkingDirectory(dir)
+	tempdir.TempWd(func(working wd.WorkingDirectory) {
 		made, _ := Make(working)
 		gotten, err := Get(working)
 		if err != nil {

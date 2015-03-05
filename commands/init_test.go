@@ -10,9 +10,8 @@ import (
 )
 
 func TestInitializeMakesKayDir(t *testing.T) {
-	tempdir.In("ini-makes-kaydir", func(dir string) {
-		working := wd.WorkingDirectory(dir)
-		Initialize(nil, working)
+	tempdir.TempWd(func(working wd.WorkingDirectory) {
+		Initialize(Arguments{}, working)
 		_, err := kaydir.Get(working)
 		if err != nil {
 			t.Errorf("Error: %v", err)
@@ -21,9 +20,8 @@ func TestInitializeMakesKayDir(t *testing.T) {
 }
 
 func TestInitializeMakesIndexDir(t *testing.T) {
-	tempdir.In("ini-makes-index", func(dir string) {
-		working := wd.WorkingDirectory(dir)
-		Initialize(nil, working)
+	tempdir.TempWd(func(working wd.WorkingDirectory) {
+		Initialize(Arguments{}, working)
 		kd, _ := kaydir.Get(working)
 		_, err := index.Get(kd)
 		if err != nil {
