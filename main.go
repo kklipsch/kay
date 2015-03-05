@@ -118,7 +118,9 @@ func KayBased(cmd func(commands.Arguments, kaydir.KayDir, wd.WorkingDirectory) e
 			return err
 		}
 
-		return commands.RunWithKayDir(toArguments(context), pwd, cmd)
+		args := toArguments(context)
+		fmt.Printf("%v-%v\n", context, args)
+		return commands.RunWithKayDir(args, pwd, cmd)
 	}
 }
 
@@ -129,14 +131,18 @@ func inKay(name string) func(c *cli.Context) error {
 	})
 }
 
-func toArguments(context *cli.Context) commands.Arguments {
-	return commands.Arguments{toChapters(context), index.Year(0000)}
+func toArguments(c *cli.Context) commands.Arguments {
+	y := index.EmptyYear
+	if c.IsSet("year") {
+		y = index.Year(c.Int("year"))
+	}
+
+	return commands.Arguments{toChapters(c), y}
 }
 
 func toChapters(context *cli.Context) []chapter.Chapter {
 	chapters := make([]chapter.Chapter, 0)
 	for _, arg := range context.Args() {
-		fmt.Printf("%v\n", arg)
 		chapters = append(chapters, chapter.Chapter(arg))
 	}
 	return chapters

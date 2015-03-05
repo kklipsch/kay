@@ -1,6 +1,8 @@
 package commands
 
 import (
+	"fmt"
+
 	"github.com/kklipsch/kay/chapter"
 	"github.com/kklipsch/kay/index"
 	"github.com/kklipsch/kay/kaydir"
@@ -86,5 +88,5 @@ func getNotes(arguments Arguments) notesChoice {
 
 //stubbed out
 func parseYear(chapter chapter.Chapter) (index.Year, error) {
-	return 1941, nil
+	return index.EmptyYear, fmt.Errorf("Don't understand how to parse")
 }
