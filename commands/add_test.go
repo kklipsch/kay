@@ -10,6 +10,34 @@ import (
 	"github.com/kklipsch/kay/wd"
 )
 
+func TestParseYear(t *testing.T) {
+	test := func(chap chapter.Chapter, y int) {
+		if gy, _ := parseYear(chap); gy != index.Year(y) {
+			t.Errorf("Expected %v Got %v: %v", y, gy, chap)
+		}
+	}
+
+	test(chapter.Chapter("1942.Foo.doc"), 1942)
+	test(chapter.Chapter("1944.Foo Bar.doc"), 1944)
+	test(chapter.Chapter("1943.Foo Bar.txt"), 1943)
+	test(chapter.Chapter("1954.Boo_Goo Hoo.doc"), 1954)
+	test(chapter.Chapter("1956.Moo-Boo.docx"), 1956)
+	test(chapter.Chapter("1965.Goo.Soo.Boo.docx"), 1965)
+}
+
+func TestUnableToParse(t *testing.T) {
+	test := func(chap chapter.Chapter) {
+		if gy, err := parseYear(chap); err == nil {
+			t.Errorf("Should have errors %v: %v", chap, gy)
+		}
+	}
+
+	test(chapter.Chapter("1943x.Foo.doc"))
+	test(chapter.Chapter("x1943.Foo.doc"))
+	test(chapter.Chapter("Foo.1954.doc"))
+	test(chapter.Chapter("Foo.doc"))
+}
+
 func TestFailureIfNoIndex(t *testing.T) {
 	tempdir.TempWd(func(w wd.WorkingDirectory) {
 		k := kaydir.KayDir(string(w))

@@ -2,11 +2,12 @@ package commands
 
 import (
 	"fmt"
-
 	"github.com/kklipsch/kay/chapter"
 	"github.com/kklipsch/kay/index"
 	"github.com/kklipsch/kay/kaydir"
 	"github.com/kklipsch/kay/wd"
+	"regexp"
+	"strconv"
 )
 
 func Add(arguments Arguments, kd kaydir.KayDir, working wd.WorkingDirectory) error {
@@ -86,7 +87,18 @@ func getNotes(arguments Arguments) notesChoice {
 	}
 }
 
-//stubbed out
-func parseYear(chapter chapter.Chapter) (index.Year, error) {
-	return index.EmptyYear, fmt.Errorf("Don't understand how to parse")
+func parseYear(chap chapter.Chapter) (index.Year, error) {
+	yearReg := regexp.MustCompile(`^([0-9]{4})\..*`)
+
+	yearString := yearReg.FindStringSubmatch(string(chap))
+	if yearString == nil {
+		return index.EmptyYear, fmt.Errorf("Could not find year in: %v", chap)
+	}
+
+	yearNum, convErr := strconv.Atoi(yearString[1])
+	if convErr != nil {
+		return index.EmptyYear, convErr
+	}
+
+	return index.Year(yearNum), nil
 }
