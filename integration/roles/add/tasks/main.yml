@@ -1,9 +1,6 @@
-- name: check the initial state before adds 
-  include: initial.yml
-          
 - name: Add a file with explicit year 
   include: add_year.yml
 
-- name: Add one file with parsed year 
-  include: add_one.yml
+- name: Add file with year parsed from the file name
+  include: add_parsed_year.yml
 

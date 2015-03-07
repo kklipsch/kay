@@ -1,5 +1,2 @@
 - name: build directories
   include: directories.yml
-
-- name: add test files to test directory
-  include: files.yml

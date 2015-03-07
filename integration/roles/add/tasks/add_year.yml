@@ -1,3 +1,22 @@
+- name: Copy test files over
+  copy: src=sandbox/without_year/ dest="{{ test_directory.stdout }}"
+
+- name: Pre explicit year add stat
+  command: chdir="{{ test_directory.stdout }}" "{{ kay_app.stdout }}" stat
+  register: stat_prestat_call 
+
+- name: d | stat
+  debug: var=stat_prestat_call 
+
+- name: Stat has missing 
+  assert: 
+        that: 
+        - "'? Test File Two.docx' in stat_prestat_call.stdout"
+        - "'? Test File Tres.docx' in stat_prestat_call.stdout"
+        - "'? test4.doc' in stat_prestat_call.stdout"
+        - "'? test5.txt' in stat_prestat_call.stdout"
+        - "'? 1984.test6.txt' in stat_prestat_call.stdout"
+
 - name: Attempt to add a non parseable name without year - should fail. 
   command: chdir="{{ test_directory.stdout }}" "{{ kay_app.stdout }}" add test4.doc
   ignore_errors: True
@@ -19,9 +38,11 @@
 - name: Stat has missing non-parseable file 
   assert: 
         that: 
-        - "'? 1942.test2.2015_02.docx' in stat_parse1_call.stdout"
-        - "'? 1943.test3.2015_02.doc' in stat_parse1_call.stdout"
+        - "'? Test File Tres.docx' in stat_parse1_call.stdout"
+        - "'? Test File Two.docx' in stat_parse1_call.stdout"
         - "'? test4.doc' in stat_parse1_call.stdout"
+        - "'? test5.txt' in stat_parse1_call.stdout"
+        - "'? 1984.test6.txt' in stat_parse1_call.stdout"
 
 - name: Add with year 
   command: chdir="{{ test_directory.stdout }}" "{{ kay_app.stdout }}" add --year 1944 test4.doc
@@ -33,8 +54,10 @@
 - name: Stat has still missing files 
   assert: 
         that: 
-        - "'? 1942.test2.2015_02.docx' in stat_yearadd_call.stdout"
-        - "'? 1943.test3.2015_02.doc' in stat_yearadd_call.stdout"
+        - "'? Test File Tres.docx' in stat_yearadd_call.stdout"
+        - "'? Test File Two.docx' in stat_yearadd_call.stdout"
+        - "'? test5.txt' in stat_yearadd_call.stdout"
+        - "'? 1984.test6.txt' in stat_yearadd_call.stdout"
 
 - name: Stat does not have added by year
   fail: msg="File is not in index '{{ stat_yearadd_call.stdout }}'"
