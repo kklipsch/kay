@@ -15,13 +15,13 @@ import (
 )
 
 func main() {
-	err := NewKay().Run(os.Args)
+	err := newKay().Run(os.Args)
 	if err != nil {
 		log.Fatal(err)
 	}
 }
 
-func NewKay() *cli.App {
+func newKay() *cli.App {
 	app := cli.NewApp()
 	app.Name = "kay"
 	app.Usage = "Highly specific content management system for grandparent biographies"
@@ -57,7 +57,7 @@ func NewKay() *cli.App {
 		{
 			Name:   "add",
 			Usage:  "[files] - add files to an index.",
-			Action: KayBased(commands.Add),
+			Action: kayBased(commands.Add),
 			Flags: []cli.Flag{
 				cli.IntFlag{
 					Name:  "year, y",
@@ -90,19 +90,19 @@ func NewKay() *cli.App {
 		{
 			Name:   "stat",
 			Usage:  "See stats on the current kay directory.",
-			Action: KayBased(commands.Stat),
+			Action: kayBased(commands.Stat),
 		},
 		{
 			Name:   "init",
 			Usage:  "initialize a new kay directory",
-			Action: Init,
+			Action: kayInit,
 		},
 	}
 
 	return app
 }
 
-func Init(context *cli.Context) error {
+func kayInit(context *cli.Context) error {
 	pwd, err := wd.Get()
 	if err != nil {
 		return err
@@ -111,7 +111,7 @@ func Init(context *cli.Context) error {
 	return commands.Initialize(toArguments(context), pwd)
 }
 
-func KayBased(cmd func(commands.Arguments, kaydir.KayDir, wd.WorkingDirectory) error) func(*cli.Context) error {
+func kayBased(cmd func(commands.Arguments, kaydir.KayDir, wd.WorkingDirectory) error) func(*cli.Context) error {
 	return func(context *cli.Context) error {
 		pwd, err := wd.Get()
 		if err != nil {
@@ -124,7 +124,7 @@ func KayBased(cmd func(commands.Arguments, kaydir.KayDir, wd.WorkingDirectory) e
 }
 
 func inKay(name string) func(c *cli.Context) error {
-	return KayBased(func(args commands.Arguments, kd kaydir.KayDir, working wd.WorkingDirectory) error {
+	return kayBased(func(args commands.Arguments, kd kaydir.KayDir, working wd.WorkingDirectory) error {
 		fmt.Printf(name)
 		return nil
 	})
@@ -140,7 +140,7 @@ func toArguments(c *cli.Context) commands.Arguments {
 }
 
 func toChapters(context *cli.Context) []chapter.Chapter {
-	chapters := make([]chapter.Chapter, 0)
+	var chapters []chapter.Chapter
 	for _, arg := range context.Args() {
 		chapters = append(chapters, chapter.Chapter(arg))
 	}
