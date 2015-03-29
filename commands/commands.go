@@ -1,6 +1,9 @@
 package commands
 
 import (
+	"fmt"
+	"strings"
+
 	"github.com/kklipsch/kay/chapter"
 	"github.com/kklipsch/kay/index"
 	"github.com/kklipsch/kay/kaydir"
@@ -19,6 +22,18 @@ func RunWithKayDir(arguments Arguments, working wd.WorkingDirectory, command fun
 	}
 
 	return command(arguments, kd, working)
+}
+
+func CompositeError(errors []error) error {
+	if len(errors) > 0 {
+		var messages []string
+		for _, err := range errors {
+			messages = append(messages, err.Error())
+		}
+		return fmt.Errorf("%v", strings.Join(messages, "\n"))
+	} else {
+		return nil
+	}
 }
 
 func GetMissingChapters(working wd.WorkingDirectory, i index.Index) ([]chapter.Chapter, error) {

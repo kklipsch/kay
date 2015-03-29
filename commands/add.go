@@ -22,13 +22,7 @@ func Add(arguments Arguments, kd kaydir.KayDir, working wd.WorkingDirectory) err
 		return addErr
 	}
 
-	errors := addChapters(i, toAdd, getYear(arguments), getTags(arguments), getNotes(arguments))
-
-	if len(errors) > 0 {
-		return errors[0] //TODO: Fix nonsense
-	} else {
-		return nil
-	}
+	return CompositeError(addChapters(i, toAdd, getYear(arguments), getTags(arguments), getNotes(arguments)))
 }
 
 func getChaptersToAdd(arguments Arguments, working wd.WorkingDirectory, i index.Index) ([]chapter.Chapter, error) {
