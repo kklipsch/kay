@@ -2,12 +2,13 @@ package commands
 
 import (
 	"fmt"
+	"regexp"
+	"strconv"
+
 	"github.com/kklipsch/kay/chapter"
 	"github.com/kklipsch/kay/index"
 	"github.com/kklipsch/kay/kaydir"
 	"github.com/kklipsch/kay/wd"
-	"regexp"
-	"strconv"
 )
 
 func Add(arguments Arguments, kd kaydir.KayDir, working wd.WorkingDirectory) error {
@@ -16,12 +17,25 @@ func Add(arguments Arguments, kd kaydir.KayDir, working wd.WorkingDirectory) err
 		return indexErr
 	}
 
-	errors := addChapters(i, arguments.Chapters, getYear(arguments), getTags(arguments), getNotes(arguments))
+	toAdd, addErr := getChaptersToAdd(arguments, working, i)
+	if addErr != nil {
+		return addErr
+	}
+
+	errors := addChapters(i, toAdd, getYear(arguments), getTags(arguments), getNotes(arguments))
 
 	if len(errors) > 0 {
 		return errors[0] //TODO: Fix nonsense
 	} else {
 		return nil
+	}
+}
+
+func getChaptersToAdd(arguments Arguments, working wd.WorkingDirectory, i index.Index) ([]chapter.Chapter, error) {
+	if len(arguments.Chapters) > 0 {
+		return arguments.Chapters, nil
+	} else {
+		return GetMissingChapters(working, i)
 	}
 }
 

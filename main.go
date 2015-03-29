@@ -119,7 +119,6 @@ func KayBased(cmd func(commands.Arguments, kaydir.KayDir, wd.WorkingDirectory) e
 		}
 
 		args := toArguments(context)
-		fmt.Printf("%v-%v\n", context, args)
 		return commands.RunWithKayDir(args, pwd, cmd)
 	}
 }
