@@ -5,7 +5,7 @@
   command: chdir="{{ test_directory.stdout }}" "{{ kay_app.stdout }}" stat
   register: stat_prestat_call 
 
-- name: Stat has missing 
+- name: Stat has missing at start of unparseable tests
   assert: 
         that: 
         - "'? Test File Two.docx' in stat_prestat_call.stdout"

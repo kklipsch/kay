@@ -20,7 +20,7 @@
   command: chdir="{{ test_directory.stdout }}" "{{ kay_app.stdout }}" stat
   register: stat_test1_call 
 
-- name: Stat has missing 
+- name: Stat has missing after adding 1 parseable file
   assert: 
         that: 
         - "'? 1942.test2.2015_02.docx' in stat_test1_call.stdout"
@@ -30,3 +30,22 @@
 - name: Stat does not have added
   fail: msg="File is not in index '{{ stat_test1_call.stdout }}'"
   when: '"? 1941.test1.2015_02.docx" in stat_test1_call.stdout'
+
+- name: Add one file with parseable name
+  command: chdir="{{ test_directory.stdout }}" "{{ kay_app.stdout }}" add 
+
+- name: Stat after adding multiple file 
+  command: chdir="{{ test_directory.stdout }}" "{{ kay_app.stdout }}" stat
+  register: stat_parsemulti 
+
+- name: Stat does not have added 1942
+  fail: msg="File is not in index '{{ stat_parsemulti.stdout }}'"
+  when: '"? 1942.test2.2015_02.docx" in stat_parsemulti.stdout'
+
+- name: Stat does not have added 1943
+  fail: msg="File is not in index '{{ stat_parsemulti.stdout }}'"
+  when: '"? 1943.test3.2015_02.doc" in stat_parsemulti.stdout'
+
+- name: Stat does not have added 1947
+  fail: msg="File is not in index '{{ stat_parsemulti.stdout }}'"
+  when: '"? 1947.test7.txt" in stat_parsemulti.stdout'
