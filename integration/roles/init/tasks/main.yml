@@ -1,5 +1,5 @@
 - name: Kay call in non-initialized directory fails.
-  command: chdir="{{ test_directory.stdout }}" "{{ kay_app.stdout }}" years
+  command: chdir="{{ test_directory.stdout }}" "{{ kay_app.stdout }}" stat
   ignore_errors: True
   register: non_init_fail
 
@@ -20,7 +20,7 @@
   command: chdir="{{ test_directory.stdout }}" "{{ kay_app.stdout }}" init
 
 - name: Kay calls should work
-  command: chdir="{{ test_directory.stdout }}" "{{ kay_app.stdout }}" years
+  command: chdir="{{ test_directory.stdout }}" "{{ kay_app.stdout }}" stat
 
 - name: Kay init again should be fine 
   command: chdir="{{ test_directory.stdout }}" "{{ kay_app.stdout }}" init 
