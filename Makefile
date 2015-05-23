@@ -12,6 +12,7 @@ INSTALL_DIR= $(HOME)/bin
 BASH_SOURCES= $(HOME)/.sources
 
 $(EXEC_NAME): bin
+	go get ./...
 	go build -o $(EXEC_NAME) *.go
 
 $(PACK_NAME): $(EXEC_NAME)
@@ -36,9 +37,6 @@ help.%: clean $(EXEC_NAME)
 
 bin:
 	mkdir -p bin
-
-dep:
-	go get github.com/kklipsch/cli
 
 clean:
 	go clean
