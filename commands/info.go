@@ -34,7 +34,7 @@ func parseMode(mode string) (func(chapter.Chapter, *index.Record) (string, error
 }
 
 func normal(chapter chapter.Chapter, record *index.Record) (string, error) {
-	return fmt.Sprintf("Name:%s\nYear:%v\nNote:%s\nTags:%s\nAdded:%s\nLast Updated:%s\n",
+	return fmt.Sprintf("Name:%s Year:%v Note:%s Tags:%s Added:%s Last Updated:%s",
 		chapter,
 		record.Year,
 		record.Note,
@@ -57,12 +57,12 @@ func year(chapter chapter.Chapter, record *index.Record) (string, error) {
 }
 
 func tags(chapter chapter.Chapter, record *index.Record) (string, error) {
-	result := ""
+	tags := []string{}
 	for _, tag := range record.Tags {
-		result = fmt.Sprintf("%s%v\n", result, tag)
+		tags = append(tags, fmt.Sprintf("%v", tag))
 	}
 
-	return result, nil
+	return strings.Join(tags, ","), nil
 }
 
 func notes(chapter chapter.Chapter, record *index.Record) (string, error) {
@@ -82,7 +82,7 @@ func localTime(t time.Time) string {
 	return local.Format("Mon, 01/02/06, 03:04PM")
 }
 
-func Info(chapter chapter.Chapter, mode string, kd kaydir.KayDir, working wd.WorkingDirectory) error {
+func Info(chapters []chapter.Chapter, mode string, kd kaydir.KayDir, working wd.WorkingDirectory) error {
 	display, parseErr := parseMode(mode)
 	if parseErr != nil {
 		return parseErr
@@ -93,6 +93,17 @@ func Info(chapter chapter.Chapter, mode string, kd kaydir.KayDir, working wd.Wor
 		return indexErr
 	}
 
+	errors := []error{}
+	for _, chapter := range chapters {
+		if err := infoChapter(chapter, index, display); err != nil {
+			errors = append(errors, err)
+		}
+	}
+
+	return CompositeError(errors)
+}
+
+func infoChapter(chapter chapter.Chapter, index index.Index, display func(chapter.Chapter, *index.Record) (string, error)) error {
 	if !index.ContainsChapter(chapter) {
 		return fmt.Errorf("%v is not indexed.", chapter)
 	}
@@ -107,6 +118,6 @@ func Info(chapter chapter.Chapter, mode string, kd kaydir.KayDir, working wd.Wor
 		return displayErr
 	}
 
-	fmt.Print(output)
+	fmt.Println(output)
 	return nil
 }

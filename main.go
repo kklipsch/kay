@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"log"
 	"os"
 	"strings"
@@ -113,11 +112,7 @@ func info(context *cli.Context, kd kaydir.KayDir, working wd.WorkingDirectory) e
 	}
 
 	chapters := toChapters(context)
-	if len(chapters) != 1 {
-		return fmt.Errorf("info works on 1 and only 1 chapter.")
-	}
-
-	return commands.Info(chapters[0], mode, kd, working)
+	return commands.Info(chapters, mode, kd, working)
 }
 
 func toChapters(context *cli.Context) []chapter.Chapter {
