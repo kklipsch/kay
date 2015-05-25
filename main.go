@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"strings"
 
 	"github.com/kklipsch/cli"
 	"github.com/kklipsch/kay/chapter"
@@ -82,7 +83,14 @@ func add(context *cli.Context, kd kaydir.KayDir, working wd.WorkingDirectory) er
 		y = index.Year(context.Int("year"))
 	}
 
-	return commands.Add(commands.AddArguments{toChapters(context), y}, kd, working)
+	t := []index.Tag{}
+	if context.IsSet("tags") {
+		for _, tag := range strings.Split(context.String("tags"), ",") {
+			t = append(t, index.Tag(tag))
+		}
+	}
+
+	return commands.Add(commands.AddArguments{toChapters(context), y, t}, kd, working)
 }
 
 func stat(context *cli.Context, kd kaydir.KayDir, working wd.WorkingDirectory) error {

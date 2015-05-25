@@ -14,6 +14,7 @@ import (
 type AddArguments struct {
 	Chapters []chapter.Chapter
 	Year     index.Year
+	Tags     []index.Tag
 }
 
 func Add(arguments AddArguments, kd kaydir.KayDir, working wd.WorkingDirectory) error {
@@ -90,7 +91,16 @@ func getYear(arguments AddArguments) yearChoice {
 
 func getTags(arguments AddArguments) tagChoice {
 	return func(chap chapter.Chapter) ([]index.Tag, error) {
-		return []index.Tag{}, nil
+		if len(arguments.Tags) > 0 {
+			return arguments.Tags, nil
+		} else {
+			tag, err := parseTag(chap)
+			if err != nil {
+				return []index.Tag{}, err
+			} else {
+				return []index.Tag{tag}, nil
+			}
+		}
 	}
 }
 
@@ -98,6 +108,15 @@ func getNotes(arguments AddArguments) notesChoice {
 	return func(chap chapter.Chapter) (index.Note, error) {
 		return index.Note(""), nil
 	}
+}
+
+func parseTag(chap chapter.Chapter) (index.Tag, error) {
+	tagRexp := regexp.MustCompile(`^[0-9]{4}\.(.*)\..*$`)
+	tagString := tagRexp.FindStringSubmatch(string(chap))
+	if tagString == nil {
+		return index.Tag(""), nil
+	}
+	return index.Tag(tagString[1]), nil
 }
 
 func parseYear(chap chapter.Chapter) (index.Year, error) {
