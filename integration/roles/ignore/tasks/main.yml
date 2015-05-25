@@ -1,0 +1,64 @@
+- name: Copy test files over
+  copy: src=sandbox/ignore/ dest="{{ test_directory.stdout }}"
+
+- name: Ignore works on stat 
+  command: chdir="{{ test_directory.stdout }}" "{{ kay_app.stdout }}" stat
+  register: stat_ignore 
+
+- name: Stat has not ignored 
+  assert: 
+        that: 
+        - "'? 1943.docx' in stat_ignore.stdout"
+
+- name: Stat does not have 1941
+  fail: msg="File is not in index '{{ stat_ignore.stdout }}'"
+  when: '"? 1941.foo.doc" in stat_ignore.stdout'
+
+- name: Stat does not have 1947
+  fail: msg="File is not in index '{{ stat_ignore.stdout }}'"
+  when: '"? 1947.foo.bar.txt" in stat_ignore.stdout'
+
+- name: Stat does not have 1942
+  fail: msg="File is not in index '{{ stat_ignore.stdout }}'"
+  when: '"? 1942.docx" in stat_ignore.stdout'
+
+- name: Add all (should skip ignored files) 
+  command: chdir="{{ test_directory.stdout }}" "{{ kay_app.stdout }}" add
+
+- name: stat added 
+  command: chdir="{{ test_directory.stdout }}" "{{ kay_app.stdout }}" stat
+  register: stat_added
+
+- name: Stat does not have added file 
+  fail: msg="File is not in index '{{ stat_ignore.stdout }}'"
+  when: '"? 1943.docx" in stat_added.stdout'
+
+- name: info on all files only shows non-ignored ones
+  command: chdir="{{ test_directory.stdout }}" "{{ kay_app.stdout }}" info -mode year
+  register: info
+
+- name: info has added file
+  assert:
+    that:
+      - "'1943' in info.stdout"
+
+- name: info on missing file fails
+  command: chdir="{{ test_directory.stdout }}" "{{ kay_app.stdout }}" info -mode year 1942.docx
+  register: missing_info
+  failed_when: missing_info.rc == 0
+
+- name: add ignored file explicitly should work
+  command: chdir="{{ test_directory.stdout }}" "{{ kay_app.stdout }}" add 1942.docx
+
+- name: info on ignored but added file explicitly works 
+  command: chdir="{{ test_directory.stdout }}" "{{ kay_app.stdout }}" info -mode year 1942.docx
+
+- name: all info includes added but ignored files
+  command: chdir="{{ test_directory.stdout }}" "{{ kay_app.stdout }}" info -mode year
+  register: all_info
+
+- name: check no ignored
+  assert: 
+      that: 
+        - "'1943' in all_info.stdout"
+        - "'1942' in all_info.stdout"
