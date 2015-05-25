@@ -79,12 +79,12 @@ func (this dirBasedIndex) ContainsChapter(chap chapter.Chapter) bool {
 func (this dirBasedIndex) GetRecord(chap chapter.Chapter) (*Record, error) {
 	file, readErr := ioutil.ReadFile(this.FullPath(chap))
 	if readErr != nil {
-		return nil, readErr
+		return nil, fmt.Errorf("Error reading record: %v", readErr)
 	}
 
 	var record Record
 	if jsonErr := json.Unmarshal(file, &record); jsonErr != nil {
-		return nil, jsonErr
+		return nil, fmt.Errorf("Error parsing record: %v (%s)", jsonErr, file)
 	}
 
 	return &record, nil
