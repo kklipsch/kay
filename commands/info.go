@@ -1,10 +1,112 @@
 package commands
 
 import (
+	"encoding/json"
+	"fmt"
+	"strings"
+	"time"
+
+	"github.com/kklipsch/kay/chapter"
+	"github.com/kklipsch/kay/index"
 	"github.com/kklipsch/kay/kaydir"
 	"github.com/kklipsch/kay/wd"
 )
 
-func Info(kd kaydir.KayDir, working wd.WorkingDirectory) error {
+func parseMode(mode string) (func(chapter.Chapter, *index.Record) (string, error), error) {
+	switch strings.ToLower(strings.TrimSpace(mode)) {
+	case "normal", "":
+		return normal, nil
+	case "json":
+		return jsonOut, nil
+	case "year":
+		return year, nil
+	case "tags":
+		return tags, nil
+	case "note":
+		return notes, nil
+	case "added":
+		return added, nil
+	case "written":
+		return written, nil
+	}
+
+	return nil, fmt.Errorf("Unknown mode %s", mode)
+}
+
+func normal(chapter chapter.Chapter, record *index.Record) (string, error) {
+	return fmt.Sprintf("Name:%s\nYear:%v\nNote:%s\nTags:%s\nAdded:%s\nLast Updated:%s\n",
+		chapter,
+		record.Year,
+		record.Note,
+		record.Tags,
+		localTime(record.DateAdded),
+		localTime(record.LastWritten)), nil
+}
+
+func jsonOut(chapter chapter.Chapter, record *index.Record) (string, error) {
+	json, jsonErr := json.Marshal(&record)
+	if jsonErr != nil {
+		return "", jsonErr
+	}
+
+	return string(json), nil
+}
+
+func year(chapter chapter.Chapter, record *index.Record) (string, error) {
+	return fmt.Sprintf("%v", record.Year), nil
+}
+
+func tags(chapter chapter.Chapter, record *index.Record) (string, error) {
+	result := ""
+	for _, tag := range record.Tags {
+		result = fmt.Sprintf("%s%v\n", result, tag)
+	}
+
+	return result, nil
+}
+
+func notes(chapter chapter.Chapter, record *index.Record) (string, error) {
+	return fmt.Sprintf("%v", record.Note), nil
+}
+
+func added(chapter chapter.Chapter, record *index.Record) (string, error) {
+	return localTime(record.DateAdded), nil
+}
+
+func written(chapter chapter.Chapter, record *index.Record) (string, error) {
+	return localTime(record.LastWritten), nil
+}
+
+func localTime(t time.Time) string {
+	local := t.Local()
+	return local.Format("Mon, 01/02/06, 03:04PM")
+}
+
+func Info(chapter chapter.Chapter, mode string, kd kaydir.KayDir, working wd.WorkingDirectory) error {
+	display, parseErr := parseMode(mode)
+	if parseErr != nil {
+		return parseErr
+	}
+
+	index, indexErr := index.Get(kd)
+	if indexErr != nil {
+		return indexErr
+	}
+
+	if !index.ContainsChapter(chapter) {
+		return fmt.Errorf("%v is not indexed.", chapter)
+	}
+
+	record, getErr := index.GetRecord(chapter)
+	if getErr != nil {
+		return getErr
+	}
+
+	output, displayErr := display(chapter, record)
+	if displayErr != nil {
+		return displayErr
+	}
+
+	fmt.Print(output)
 	return nil
 }

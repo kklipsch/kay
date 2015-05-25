@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"log"
 	"os"
 
@@ -47,7 +48,7 @@ func newKay() *cli.App {
 			Flags: []cli.Flag{
 				cli.StringFlag{
 					Name:  "mode, m",
-					Usage: "info supports several modes (json, year, tags, notes, added, written). ",
+					Usage: "info supports several modes (normal, json, year, tags, note, added, written). ",
 				},
 			},
 		},
@@ -89,7 +90,17 @@ func stat(context *cli.Context, kd kaydir.KayDir, working wd.WorkingDirectory) e
 }
 
 func info(context *cli.Context, kd kaydir.KayDir, working wd.WorkingDirectory) error {
-	return nil
+	mode := ""
+	if context.IsSet("mode") {
+		mode = context.String("mode")
+	}
+
+	chapters := toChapters(context)
+	if len(chapters) != 1 {
+		return fmt.Errorf("info works on 1 and only 1 chapter.")
+	}
+
+	return commands.Info(chapters[0], mode, kd, working)
 }
 
 func toChapters(context *cli.Context) []chapter.Chapter {

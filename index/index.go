@@ -21,7 +21,7 @@ type Record struct {
 const EmptyYear = Year(0)
 
 func NewRecord(year Year, note Note, tags ...Tag) *Record {
-	return &Record{year, note, time.Now(), time.Now(), tags}
+	return &Record{year, note, time.Now().UTC(), time.Now().UTC(), tags}
 }
 
 type Index interface {
