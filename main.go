@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"log"
 	"os"
 
@@ -29,7 +28,7 @@ func newKay() *cli.App {
 		{
 			Name:   "add",
 			Usage:  "[files] - add files to an index.",
-			Action: kayBased(commands.Add),
+			Action: inKayDir(add),
 			Flags: []cli.Flag{
 				cli.IntFlag{
 					Name:  "year, y",
@@ -44,7 +43,7 @@ func newKay() *cli.App {
 		{
 			Name:   "info",
 			Usage:  "[file] - info displays metadata for a file.",
-			Action: kayBased(commands.Info),
+			Action: inKayDir(info),
 			Flags: []cli.Flag{
 				cli.StringFlag{
 					Name:  "mode, m",
@@ -55,7 +54,7 @@ func newKay() *cli.App {
 		{
 			Name:   "stat",
 			Usage:  "See stats on the current kay directory.",
-			Action: kayBased(commands.Stat),
+			Action: inKayDir(stat),
 		},
 		{
 			Name:   "init",
@@ -73,35 +72,24 @@ func kayInit(context *cli.Context) error {
 		return err
 	}
 
-	return commands.Initialize(toArguments(context), pwd)
+	return commands.Initialize(pwd)
 }
 
-func kayBased(cmd func(commands.Arguments, kaydir.KayDir, wd.WorkingDirectory) error) func(*cli.Context) error {
-	return func(context *cli.Context) error {
-		pwd, err := wd.Get()
-		if err != nil {
-			return err
-		}
-
-		args := toArguments(context)
-		return commands.RunWithKayDir(args, pwd, cmd)
-	}
-}
-
-func inKay(name string) func(c *cli.Context) error {
-	return kayBased(func(args commands.Arguments, kd kaydir.KayDir, working wd.WorkingDirectory) error {
-		fmt.Printf(name)
-		return nil
-	})
-}
-
-func toArguments(c *cli.Context) commands.Arguments {
+func add(context *cli.Context, kd kaydir.KayDir, working wd.WorkingDirectory) error {
 	y := index.EmptyYear
-	if c.IsSet("year") {
-		y = index.Year(c.Int("year"))
+	if context.IsSet("year") {
+		y = index.Year(context.Int("year"))
 	}
 
-	return commands.Arguments{toChapters(c), y}
+	return commands.Add(commands.AddArguments{toChapters(context), y}, kd, working)
+}
+
+func stat(context *cli.Context, kd kaydir.KayDir, working wd.WorkingDirectory) error {
+	return commands.Stat(kd, working)
+}
+
+func info(context *cli.Context, kd kaydir.KayDir, working wd.WorkingDirectory) error {
+	return nil
 }
 
 func toChapters(context *cli.Context) []chapter.Chapter {
@@ -110,4 +98,22 @@ func toChapters(context *cli.Context) []chapter.Chapter {
 		chapters = append(chapters, chapter.Chapter(arg))
 	}
 	return chapters
+}
+
+func inKayDir(cmd func(*cli.Context, kaydir.KayDir, wd.WorkingDirectory) error) func(*cli.Context) error {
+
+	return func(context *cli.Context) error {
+
+		working, err := wd.Get()
+		if err != nil {
+			return err
+		}
+
+		kd, kdErr := kaydir.Get(working)
+		if kdErr != nil {
+			return kdErr
+		}
+
+		return cmd(context, kd, working)
+	}
 }

@@ -11,7 +11,12 @@ import (
 	"github.com/kklipsch/kay/wd"
 )
 
-func Add(arguments Arguments, kd kaydir.KayDir, working wd.WorkingDirectory) error {
+type AddArguments struct {
+	Chapters []chapter.Chapter
+	Year     index.Year
+}
+
+func Add(arguments AddArguments, kd kaydir.KayDir, working wd.WorkingDirectory) error {
 	i, indexErr := index.Get(kd)
 	if indexErr != nil {
 		return indexErr
@@ -25,7 +30,7 @@ func Add(arguments Arguments, kd kaydir.KayDir, working wd.WorkingDirectory) err
 	return CompositeError(addChapters(i, toAdd, getYear(arguments), getTags(arguments), getNotes(arguments)))
 }
 
-func getChaptersToAdd(arguments Arguments, working wd.WorkingDirectory, i index.Index) ([]chapter.Chapter, error) {
+func getChaptersToAdd(arguments AddArguments, working wd.WorkingDirectory, i index.Index) ([]chapter.Chapter, error) {
 	if len(arguments.Chapters) > 0 {
 		return arguments.Chapters, nil
 	} else {
@@ -73,7 +78,7 @@ type yearChoice func(chapter.Chapter) (index.Year, error)
 type tagChoice func(chapter.Chapter) ([]index.Tag, error)
 type notesChoice func(chapter.Chapter) (index.Note, error)
 
-func getYear(arguments Arguments) yearChoice {
+func getYear(arguments AddArguments) yearChoice {
 	return func(chap chapter.Chapter) (index.Year, error) {
 		if arguments.Year != index.EmptyYear {
 			return arguments.Year, nil
@@ -83,13 +88,13 @@ func getYear(arguments Arguments) yearChoice {
 	}
 }
 
-func getTags(arguments Arguments) tagChoice {
+func getTags(arguments AddArguments) tagChoice {
 	return func(chap chapter.Chapter) ([]index.Tag, error) {
 		return []index.Tag{}, nil
 	}
 }
 
-func getNotes(arguments Arguments) notesChoice {
+func getNotes(arguments AddArguments) notesChoice {
 	return func(chap chapter.Chapter) (index.Note, error) {
 		return index.Note(""), nil
 	}

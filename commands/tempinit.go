@@ -9,7 +9,7 @@ import (
 func TempInit(action func(wd.WorkingDirectory, kaydir.KayDir)) error {
 	var err error
 	err = tempdir.TempWd(func(working wd.WorkingDirectory) {
-		Initialize(Arguments{}, working)
+		Initialize(working)
 		kd, kerr := kaydir.Get(working)
 		if kerr != nil {
 			err = kerr

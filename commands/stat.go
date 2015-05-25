@@ -7,7 +7,7 @@ import (
 	"github.com/kklipsch/kay/wd"
 )
 
-func Stat(arguments Arguments, kd kaydir.KayDir, working wd.WorkingDirectory) error {
+func Stat(kd kaydir.KayDir, working wd.WorkingDirectory) error {
 	i, indexErr := index.Get(kd)
 	if indexErr != nil {
 		return indexErr

@@ -41,7 +41,7 @@ func TestUnableToParse(t *testing.T) {
 func TestFailureIfNoIndex(t *testing.T) {
 	tempdir.TempWd(func(w wd.WorkingDirectory) {
 		k := kaydir.KayDir(string(w))
-		if err := Add(Arguments{}, k, w); err == nil {
+		if err := Add(AddArguments{}, k, w); err == nil {
 			t.Errorf("Did not fail")
 		}
 	})
@@ -56,7 +56,7 @@ func TestAddExplicitYear(t *testing.T) {
 
 		y := index.Year(1942)
 
-		Add(Arguments{[]chapter.Chapter{c1, c2, c3}, y}, kd, w)
+		Add(AddArguments{[]chapter.Chapter{c1, c2, c3}, y}, kd, w)
 
 		i, _ := index.Get(kd)
 

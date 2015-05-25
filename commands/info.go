@@ -5,6 +5,6 @@ import (
 	"github.com/kklipsch/kay/wd"
 )
 
-func Info(arguments Arguments, kd kaydir.KayDir, working wd.WorkingDirectory) error {
+func Info(kd kaydir.KayDir, working wd.WorkingDirectory) error {
 	return nil
 }
