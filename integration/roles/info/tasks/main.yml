@@ -52,7 +52,7 @@
 
 - name: test tags
   fail: msg="tags not gotten"
-  when: tags.stdout != 'foo\nbar'
+  when: tags.stdout != 'foo,bar'
 
 - name: DateAdded info 
   command: chdir="{{ test_directory.stdout }}" "{{ kay_app.stdout }}" info -m added info_file.doc  
