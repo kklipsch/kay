@@ -42,6 +42,17 @@ func newKay() *cli.App {
 			},
 		},
 		{
+			Name:   "info",
+			Usage:  "[file] - info displays metadata for a file.",
+			Action: kayBased(commands.Info),
+			Flags: []cli.Flag{
+				cli.StringFlag{
+					Name:  "mode, m",
+					Usage: "info supports several modes (json, year, tags, notes, added, written). ",
+				},
+			},
+		},
+		{
 			Name:   "stat",
 			Usage:  "See stats on the current kay directory.",
 			Action: kayBased(commands.Stat),
