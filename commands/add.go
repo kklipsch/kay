@@ -15,6 +15,7 @@ type AddArguments struct {
 	Chapters []chapter.Chapter
 	Year     index.Year
 	Tags     []index.Tag
+	Note     index.Note
 }
 
 func Add(arguments AddArguments, kd kaydir.KayDir, working wd.WorkingDirectory) error {
@@ -106,7 +107,7 @@ func getTags(arguments AddArguments) tagChoice {
 
 func getNotes(arguments AddArguments) notesChoice {
 	return func(chap chapter.Chapter) (index.Note, error) {
-		return index.Note(""), nil
+		return arguments.Note, nil
 	}
 }
 

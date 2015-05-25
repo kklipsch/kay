@@ -34,11 +34,15 @@ func newKay() *cli.App {
 			Flags: []cli.Flag{
 				cli.IntFlag{
 					Name:  "year, y",
-					Usage: "which year the files should be attached to. Will fail if not provided or parsed.",
+					Usage: "which year the file(s) should be attached to. Will fail if not provided or parsed.",
 				},
 				cli.StringFlag{
 					Name:  "tags, t",
-					Usage: "a csv list of tags for the file. Will NOT fail if not provided or parsed.",
+					Usage: "a csv list of tags for the file(s). Will NOT fail if not provided or parsed.",
+				},
+				cli.StringFlag{
+					Name:  "note, n",
+					Usage: "a note for the file(s). Will NOT fail if not provided or parsed.",
 				},
 			},
 		},
@@ -90,7 +94,12 @@ func add(context *cli.Context, kd kaydir.KayDir, working wd.WorkingDirectory) er
 		}
 	}
 
-	return commands.Add(commands.AddArguments{toChapters(context), y, t}, kd, working)
+	n := index.Note("")
+	if context.IsSet("note") {
+		n = index.Note(context.String("note"))
+	}
+
+	return commands.Add(commands.AddArguments{toChapters(context), y, t, n}, kd, working)
 }
 
 func stat(context *cli.Context, kd kaydir.KayDir, working wd.WorkingDirectory) error {

@@ -88,7 +88,7 @@ func TestAddExplicitYear(t *testing.T) {
 
 		y := index.Year(1942)
 
-		Add(AddArguments{[]chapter.Chapter{c1, c2, c3}, y, []index.Tag{}}, kd, w)
+		Add(AddArguments{[]chapter.Chapter{c1, c2, c3}, y, []index.Tag{}, index.Note("")}, kd, w)
 
 		i, _ := index.Get(kd)
 
@@ -105,6 +105,36 @@ func TestAddExplicitYear(t *testing.T) {
 		rec3, _ := i.GetRecord(c3)
 		if rec3.Year != y {
 			t.Errorf("Year 3 was incorrect: %v", rec3)
+		}
+	})
+}
+
+func TestAddExplicitNote(t *testing.T) {
+	TempInit(func(w wd.WorkingDirectory, kd kaydir.KayDir) {
+
+		c1 := chapter.Chapter("foo")
+		c2 := chapter.Chapter("moo")
+		c3 := chapter.Chapter("boo")
+
+		n := index.Note("noooo")
+
+		Add(AddArguments{[]chapter.Chapter{c1, c2, c3}, index.Year(1942), []index.Tag{}, n}, kd, w)
+
+		i, _ := index.Get(kd)
+
+		rec1, _ := i.GetRecord(c1)
+		if rec1.Note != n {
+			t.Errorf("rec 1 was incorrect: %v", rec1)
+		}
+
+		rec2, _ := i.GetRecord(c2)
+		if rec2.Note != n {
+			t.Errorf("rec 2 was incorrect: %v", rec2)
+		}
+
+		rec3, _ := i.GetRecord(c3)
+		if rec3.Note != n {
+			t.Errorf("rec 3 was incorrect: %v", rec3)
 		}
 	})
 }
@@ -133,7 +163,7 @@ func TestAddExplicitTags(t *testing.T) {
 
 		y := index.Year(1942)
 
-		Add(AddArguments{[]chapter.Chapter{c1, c2, c3}, y, []index.Tag{index.Tag("a"), index.Tag("b")}}, kd, w)
+		Add(AddArguments{[]chapter.Chapter{c1, c2, c3}, y, []index.Tag{index.Tag("a"), index.Tag("b")}, index.Note("")}, kd, w)
 
 		i, _ := index.Get(kd)
 
