@@ -28,4 +28,5 @@ type Index interface {
 	AddChapter(chap chapter.Chapter, record *Record) (*Record, error)
 	ContainsChapter(chap chapter.Chapter) bool
 	GetRecord(chap chapter.Chapter) (*Record, error)
+	AllIndexed() []chapter.Chapter
 }

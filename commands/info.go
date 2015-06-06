@@ -93,6 +93,10 @@ func Info(chapters []chapter.Chapter, mode string, kd kaydir.KayDir, working wd.
 		return indexErr
 	}
 
+	if len(chapters) == 0 {
+		chapters = index.AllIndexed()
+	}
+
 	errors := []error{}
 	for _, chapter := range chapters {
 		if err := infoChapter(chapter, index, display); err != nil {

@@ -76,6 +76,21 @@ func (this dirBasedIndex) ContainsChapter(chap chapter.Chapter) bool {
 	return err == nil
 }
 
+func (this dirBasedIndex) AllIndexed() []chapter.Chapter {
+	indexed := []chapter.Chapter{}
+
+	files, err := ioutil.ReadDir(string(this))
+	if err != nil {
+		return indexed
+	}
+
+	for _, file := range files {
+		indexed = append(indexed, chapter.Chapter(file.Name()))
+	}
+
+	return indexed
+}
+
 func (this dirBasedIndex) GetRecord(chap chapter.Chapter) (*Record, error) {
 	file, readErr := ioutil.ReadFile(this.FullPath(chap))
 	if readErr != nil {
