@@ -8,7 +8,7 @@ import (
 
 func getTopCaller() (string, int) {
 
-	var i int = 0
+	var i int
 
 	for {
 		_, _, _, ok := runtime.Caller(i)

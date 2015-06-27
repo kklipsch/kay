@@ -82,6 +82,7 @@ func localTime(t time.Time) string {
 	return local.Format("Mon, 01/02/06, 03:04PM")
 }
 
+//Info prints the index informaiton for the given chapters, output is based on the mode.
 func Info(chapters []chapter.Chapter, mode string, kd kaydir.KayDir, working wd.WorkingDirectory) error {
 	display, parseErr := parseMode(mode)
 	if parseErr != nil {
@@ -104,12 +105,12 @@ func Info(chapters []chapter.Chapter, mode string, kd kaydir.KayDir, working wd.
 		}
 	}
 
-	return CompositeError(errors)
+	return compositeError(errors)
 }
 
 func infoChapter(chapter chapter.Chapter, index index.Index, display func(chapter.Chapter, *index.Record) (string, error)) error {
 	if !index.ContainsChapter(chapter) {
-		return fmt.Errorf("%v is not indexed.", chapter)
+		return fmt.Errorf("%v is not indexed", chapter)
 	}
 
 	record, getErr := index.GetRecord(chapter)

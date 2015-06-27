@@ -8,8 +8,10 @@ import (
 	"github.com/kklipsch/kay/wd"
 )
 
+//KayDir is the .kay subfolder
 type KayDir string
 
+//Get will look in the current working directory for the .kay directory.  If it doesn't exist this is an error.
 func Get(working wd.WorkingDirectory) (KayDir, error) {
 	path := metaPath(working)
 	if _, err := os.Stat(path); err != nil {
@@ -20,6 +22,7 @@ func Get(working wd.WorkingDirectory) (KayDir, error) {
 
 }
 
+//Make will create a .kay directory in the working directory.
 func Make(in wd.WorkingDirectory) (KayDir, error) {
 	path := metaPath(in)
 	if err := os.MkdirAll(path, 0755); err != nil {

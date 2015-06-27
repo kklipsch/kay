@@ -15,16 +15,18 @@ import (
 
 type dirBasedIndex string
 
-func IndexPath(kd kaydir.KayDir) string {
+func pathToIndex(kd kaydir.KayDir) string {
 	return filepath.Join(string(kd), "index")
 }
 
+//Make creates the index subfolder in the .kay directory
 func Make(kd kaydir.KayDir) error {
-	return os.MkdirAll(IndexPath(kd), 0755)
+	return os.MkdirAll(pathToIndex(kd), 0755)
 }
 
+//Get creates an in memory Index from the index subfolder of the .kay directory.  If index does not exist it is an error.
 func Get(kd kaydir.KayDir) (Index, error) {
-	path := IndexPath(kd)
+	path := pathToIndex(kd)
 
 	if err := validateIndexDirectory(path); err != nil {
 		return nil, err
@@ -46,9 +48,9 @@ func validateIndexDirectory(path string) error {
 	return nil
 }
 
-func (this dirBasedIndex) AddChapter(chap chapter.Chapter, record *Record) (*Record, error) {
+func (index dirBasedIndex) AddChapter(chap chapter.Chapter, record *Record) (*Record, error) {
 
-	if this.ContainsChapter(chap) {
+	if index.ContainsChapter(chap) {
 		return nil, fmt.Errorf("Index already contains %v", chap)
 	}
 
@@ -60,26 +62,26 @@ func (this dirBasedIndex) AddChapter(chap chapter.Chapter, record *Record) (*Rec
 		return nil, jsonErr
 	}
 
-	if writeErr := ioutil.WriteFile(this.FullPath(chap), json, 0600); writeErr != nil {
+	if writeErr := ioutil.WriteFile(index.FullPath(chap), json, 0600); writeErr != nil {
 		return nil, writeErr
 	}
 
 	return record, nil
 }
 
-func (this dirBasedIndex) FullPath(chap chapter.Chapter) string {
-	return path.Join(string(this), string(chap))
+func (index dirBasedIndex) FullPath(chap chapter.Chapter) string {
+	return path.Join(string(index), string(chap))
 }
 
-func (this dirBasedIndex) ContainsChapter(chap chapter.Chapter) bool {
-	_, err := os.Stat(this.FullPath(chap))
+func (index dirBasedIndex) ContainsChapter(chap chapter.Chapter) bool {
+	_, err := os.Stat(index.FullPath(chap))
 	return err == nil
 }
 
-func (this dirBasedIndex) AllIndexed() []chapter.Chapter {
+func (index dirBasedIndex) AllIndexed() []chapter.Chapter {
 	indexed := []chapter.Chapter{}
 
-	files, err := ioutil.ReadDir(string(this))
+	files, err := ioutil.ReadDir(string(index))
 	if err != nil {
 		return indexed
 	}
@@ -91,8 +93,8 @@ func (this dirBasedIndex) AllIndexed() []chapter.Chapter {
 	return indexed
 }
 
-func (this dirBasedIndex) GetRecord(chap chapter.Chapter) (*Record, error) {
-	file, readErr := ioutil.ReadFile(this.FullPath(chap))
+func (index dirBasedIndex) GetRecord(chap chapter.Chapter) (*Record, error) {
+	file, readErr := ioutil.ReadFile(index.FullPath(chap))
 	if readErr != nil {
 		return nil, fmt.Errorf("Error reading record: %v", readErr)
 	}

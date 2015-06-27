@@ -30,7 +30,7 @@ func TestGetChaptersFromPath(t *testing.T) {
 
 		expected := []string{"test1", "test2"}
 		chapters, _ := GetChaptersFromPath(dir)
-		if !reflect.DeepEqual(MapChaptersToString(chapters), expected) {
+		if !reflect.DeepEqual(chaptersAsStrings(chapters), expected) {
 			t.Errorf("Expected %v Got %v", expected, chapters)
 		}
 	})
@@ -44,7 +44,7 @@ func TestGetChaptersFromPathFiltersDirectories(t *testing.T) {
 
 		expected := []string{"test1", "test3"}
 		chapters, _ := GetChaptersFromPath(dir)
-		if !reflect.DeepEqual(MapChaptersToString(chapters), expected) {
+		if !reflect.DeepEqual(chaptersAsStrings(chapters), expected) {
 			t.Errorf("Expected %v Got %v", expected, chapters)
 		}
 	})

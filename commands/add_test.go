@@ -80,7 +80,7 @@ func TestFailureIfNoIndex(t *testing.T) {
 }
 
 func TestAddExplicitYear(t *testing.T) {
-	TempInit(func(w wd.WorkingDirectory, kd kaydir.KayDir) {
+	tempInit(func(w wd.WorkingDirectory, kd kaydir.KayDir) {
 
 		c1 := chapter.Chapter("foo")
 		c2 := chapter.Chapter("moo")
@@ -110,7 +110,7 @@ func TestAddExplicitYear(t *testing.T) {
 }
 
 func TestAddExplicitNote(t *testing.T) {
-	TempInit(func(w wd.WorkingDirectory, kd kaydir.KayDir) {
+	tempInit(func(w wd.WorkingDirectory, kd kaydir.KayDir) {
 
 		c1 := chapter.Chapter("foo")
 		c2 := chapter.Chapter("moo")
@@ -155,7 +155,7 @@ func tagsEqual(rec *index.Record, tags ...string) error {
 }
 
 func TestAddExplicitTags(t *testing.T) {
-	TempInit(func(w wd.WorkingDirectory, kd kaydir.KayDir) {
+	tempInit(func(w wd.WorkingDirectory, kd kaydir.KayDir) {
 
 		c1 := chapter.Chapter("foo")
 		c2 := chapter.Chapter("moo")

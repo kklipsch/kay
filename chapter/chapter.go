@@ -7,11 +7,11 @@ import (
 	"github.com/kklipsch/kay/wd"
 )
 
+//Chapter a chapter represents a single version of a given year's story.
 type Chapter string
 
-func GetChaptersFromFileList(content []os.FileInfo) []Chapter {
-	//is it bad to over allocate an array in go?
-	chapters := make([]Chapter, 0)
+func filesToChapters(content []os.FileInfo) []Chapter {
+	var chapters []Chapter
 	for _, f := range content {
 		if !f.IsDir() {
 			chapters = append(chapters, Chapter(f.Name()))
@@ -20,19 +20,20 @@ func GetChaptersFromFileList(content []os.FileInfo) []Chapter {
 	return chapters
 }
 
+//GetChaptersFromPath will get every file in the working directory as a chapter.
 func GetChaptersFromPath(working wd.WorkingDirectory) ([]Chapter, error) {
 	dir, err := ioutil.ReadDir(string(working))
 	if err != nil {
 		return nil, err
 	}
 
-	return GetChaptersFromFileList(dir), nil
+	return filesToChapters(dir), nil
 }
 
-func MapChaptersToString(chapters []Chapter) []string {
+func chaptersAsStrings(chapters []Chapter) []string {
 	strings := []string{}
-	for _, c := range chapters {
-		strings = append(strings, string(c))
+	for _, chaptersAsStrings := range chapters {
+		strings = append(strings, string(chaptersAsStrings))
 	}
 	return strings
 }

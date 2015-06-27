@@ -10,19 +10,19 @@ import (
 	"github.com/kklipsch/kay/wd"
 )
 
-func CompositeError(errors []error) error {
+func compositeError(errors []error) error {
 	if len(errors) > 0 {
 		var messages []string
 		for _, err := range errors {
 			messages = append(messages, err.Error())
 		}
 		return fmt.Errorf("%v", strings.Join(messages, "\n"))
-	} else {
-		return nil
 	}
+
+	return nil
 }
 
-func GetMissingChapters(working wd.WorkingDirectory, i index.Index) ([]chapter.Chapter, error) {
+func getMissingChapters(working wd.WorkingDirectory, i index.Index) ([]chapter.Chapter, error) {
 	var chapters []chapter.Chapter
 
 	ki, err := kayignore.Get(working)

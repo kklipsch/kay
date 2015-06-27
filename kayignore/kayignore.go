@@ -13,6 +13,7 @@ import (
 
 type ignorePattern string
 
+//KayIgnore determines if a chapter should be ignored or not based on the .kayignore file and golang regexp matching.
 type KayIgnore interface {
 	Ignore(chap chapter.Chapter) bool
 }
@@ -29,6 +30,7 @@ func kayIgnorePath(workingDir wd.WorkingDirectory) string {
 	return filepath.Join(string(workingDir), ignoreFile)
 }
 
+//Get will look for a .kayignore file in the supplied wd.WorkingDirectory.  If none exists nothing will be ignored.
 func Get(workingDir wd.WorkingDirectory) (KayIgnore, error) {
 	filename := kayIgnorePath(workingDir)
 	if _, err := os.Stat(filename); os.IsNotExist(err) {

@@ -11,6 +11,7 @@ import (
 	"github.com/kklipsch/kay/wd"
 )
 
+//AddArguments are anything necessary to add chapters
 type AddArguments struct {
 	Chapters []chapter.Chapter
 	Year     index.Year
@@ -18,6 +19,7 @@ type AddArguments struct {
 	Note     index.Note
 }
 
+//Add will add any missing chapters with the supplied arguments
 func Add(arguments AddArguments, kd kaydir.KayDir, working wd.WorkingDirectory) error {
 	i, indexErr := index.Get(kd)
 	if indexErr != nil {
@@ -29,20 +31,20 @@ func Add(arguments AddArguments, kd kaydir.KayDir, working wd.WorkingDirectory) 
 		return addErr
 	}
 
-	return CompositeError(addChapters(i, toAdd, getYear(arguments), getTags(arguments), getNotes(arguments)))
+	return compositeError(addChapters(i, toAdd, getYear(arguments), getTags(arguments), getNotes(arguments)))
 }
 
 func getChaptersToAdd(arguments AddArguments, working wd.WorkingDirectory, i index.Index) ([]chapter.Chapter, error) {
 	if len(arguments.Chapters) > 0 {
 		return arguments.Chapters, nil
-	} else {
-		return GetMissingChapters(working, i)
 	}
+
+	return getMissingChapters(working, i)
 }
 
 func addChapters(i index.Index, chapters []chapter.Chapter, year yearChoice, tags tagChoice, notes notesChoice) []error {
 
-	errors := make([]error, 0)
+	var errors []error
 	for _, chapter := range chapters {
 		if addErr := addChapter(i, chapter, year, tags, notes); addErr != nil {
 			errors = append(errors, addErr)
@@ -84,9 +86,9 @@ func getYear(arguments AddArguments) yearChoice {
 	return func(chap chapter.Chapter) (index.Year, error) {
 		if arguments.Year != index.EmptyYear {
 			return arguments.Year, nil
-		} else {
-			return parseYear(chap)
 		}
+
+		return parseYear(chap)
 	}
 }
 
@@ -94,14 +96,14 @@ func getTags(arguments AddArguments) tagChoice {
 	return func(chap chapter.Chapter) ([]index.Tag, error) {
 		if len(arguments.Tags) > 0 {
 			return arguments.Tags, nil
-		} else {
-			tag, err := parseTag(chap)
-			if err != nil {
-				return []index.Tag{}, err
-			} else {
-				return []index.Tag{tag}, nil
-			}
 		}
+
+		tag, err := parseTag(chap)
+		if err != nil {
+			return []index.Tag{}, err
+		}
+
+		return []index.Tag{tag}, nil
 	}
 }
 
@@ -117,6 +119,7 @@ func parseTag(chap chapter.Chapter) (index.Tag, error) {
 	if tagString == nil {
 		return index.Tag(""), nil
 	}
+
 	return index.Tag(tagString[1]), nil
 }
 
