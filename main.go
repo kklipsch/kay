@@ -5,7 +5,7 @@ import (
 	"os"
 	"strings"
 
-	"github.com/kklipsch/cli"
+	"github.com/codegangsta/cli"
 	"github.com/kklipsch/kay/chapter"
 	"github.com/kklipsch/kay/commands"
 	"github.com/kklipsch/kay/index"
@@ -14,10 +14,7 @@ import (
 )
 
 func main() {
-	err := newKay().Run(os.Args)
-	if err != nil {
-		log.Fatal(err)
-	}
+	newKay().Run(os.Args)
 }
 
 func newKay() *cli.App {
@@ -71,13 +68,16 @@ func newKay() *cli.App {
 	return app
 }
 
-func kayInit(context *cli.Context) error {
+func kayInit(context *cli.Context) {
 	pwd, err := wd.Get()
 	if err != nil {
-		return err
+		log.Fatal(err)
 	}
 
-	return commands.Initialize(pwd)
+	err = commands.Initialize(pwd)
+	if err != nil {
+		log.Fatal(err)
+	}
 }
 
 func add(context *cli.Context, kd kaydir.KayDir, working wd.WorkingDirectory) error {
@@ -123,20 +123,23 @@ func toChapters(context *cli.Context) []chapter.Chapter {
 	return chapters
 }
 
-func inKayDir(cmd func(*cli.Context, kaydir.KayDir, wd.WorkingDirectory) error) func(*cli.Context) error {
+func inKayDir(cmd func(*cli.Context, kaydir.KayDir, wd.WorkingDirectory) error) func(*cli.Context) {
 
-	return func(context *cli.Context) error {
+	return func(context *cli.Context) {
 
 		working, err := wd.Get()
 		if err != nil {
-			return err
+			log.Fatal(err)
 		}
 
 		kd, kdErr := kaydir.Get(working)
 		if kdErr != nil {
-			return kdErr
+			log.Fatal(kdErr)
 		}
 
-		return cmd(context, kd, working)
+		cmdErr := cmd(context, kd, working)
+		if cmdErr != nil {
+			log.Fatal(cmdErr)
+		}
 	}
 }
