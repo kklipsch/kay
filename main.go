@@ -98,7 +98,7 @@ func add(context *cli.Context, kd kaydir.KayDir, working wd.WorkingDirectory) er
 		n = index.Note(context.String("note"))
 	}
 
-	return commands.Add(commands.AddArguments{toChapters(context), y, t, n}, kd, working)
+	return commands.Add(commands.AddArguments{Chapters: toChapters(context), Year: y, Tags: t, Note: n}, kd, working)
 }
 
 func stat(context *cli.Context, kd kaydir.KayDir, working wd.WorkingDirectory) error {

@@ -40,7 +40,7 @@ func TestTempWd(t *testing.T) {
 	})
 
 	if err != nil {
-		t.Error("Failed: %v", err)
+		t.Errorf("Failed: %v", err)
 	}
 
 	if !called {

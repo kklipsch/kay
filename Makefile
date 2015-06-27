@@ -20,7 +20,7 @@ $(PACK_NAME): $(EXEC_NAME)
 
 package: $(PACK_NAME)
 
-test: 
+test:	vet 
 	go test ./...
 
 integration: clean $(PACK_NAME)
@@ -41,3 +41,9 @@ bin:
 clean:
 	go clean
 	rm -rf bin
+
+getvet: 
+	go get golang.org/x/tools/cmd/vet
+
+vet: getvet
+	go vet ./...
