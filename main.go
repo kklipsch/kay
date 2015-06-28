@@ -59,6 +59,11 @@ func newKay() *cli.App {
 			Action: inKayDir(stat),
 		},
 		{
+			Name:   "getconfig",
+			Usage:  "[name] - print the config variable named.",
+			Action: inKayDir(getconfig),
+		},
+		{
 			Name:   "init",
 			Usage:  "initialize a new kay directory",
 			Action: kayInit,
@@ -78,6 +83,16 @@ func kayInit(context *cli.Context) {
 	if err != nil {
 		log.Fatal(err)
 	}
+}
+
+func getconfig(context *cli.Context, kd kaydir.KayDir, working wd.WorkingDirectory) error {
+
+	which := ""
+	if len(context.Args()) >= 1 {
+		which = strings.ToLower(strings.TrimSpace(context.Args()[0]))
+	}
+	return commands.GetConfig(kd, which)
+
 }
 
 func add(context *cli.Context, kd kaydir.KayDir, working wd.WorkingDirectory) error {
