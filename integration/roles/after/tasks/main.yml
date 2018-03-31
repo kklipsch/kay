@@ -1,5 +1,0 @@
-- name: Cleanup test directory
-  file: path={{ test_directory.stdout }} state=absent
-
-- name: Cleanup install directory
-  file: path={{ install_directory.stdout }} state=absent

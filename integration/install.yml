@@ -1,3 +1,0 @@
-- hosts: install-locations 
-  roles:
-        - install

@@ -1,9 +1,0 @@
-- name: Install binary in install directory
-  command: unzip -o "{{ kay_package }}" kay  -d "{{ install_directory.stdout }}"
-
-- name: Install autocomplete file in bash sources
-  command: unzip -o "{{ kay_package }}" kay.bash -d "{{ bash_sources.stdout }}"
-
-- name: Get application name
-  command: echo "{{ install_directory.stdout }}"/kay
-  register: kay_app

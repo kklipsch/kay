@@ -1,9 +1,0 @@
-- hosts: test-locations
-  roles:
-        - before
-        - install
-        - init
-        - add
-        - info 
-        - ignore
-        - after 

@@ -1,2 +1,0 @@
-- name: build directories
-  include: directories.yml
